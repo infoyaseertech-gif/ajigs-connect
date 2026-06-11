@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact Us — AJIGS CONNECT | Get a Quote in Kaduna</title>
+  <meta name="description" content="Contact AJIGS CONNECT for a cleaning, laundry, upholstery or fumigation quote in Kaduna State. Call 08069051403 or send a message." />
+  <meta name="theme-color" content="#0a0a0a" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" type="image/png" href="assets/icon-192.png" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ===== NAVBAR ===== -->
+  <nav class="navbar" id="navbar">
+    <div class="navbar-inner">
+      <a href="index.html" class="navbar-brand">
+        <span>AJIGS</span> CONNECT
+        <small>RC 7304230</small>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="services.html">Services</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="contact.html" class="active">Contact</a></li>
+      </ul>
+      <div class="nav-actions">
+        <a href="contact.html" class="btn btn-primary btn-sm">Get a Quote</a>
+        <a href="login.html" class="btn btn-outline btn-sm">Staff Login</a>
+      </div>
+      <button class="hamburger" id="hamburger" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+  <div class="mobile-menu" id="mobileMenu">
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="services.html">Services</a></li>
+      <li><a href="about.html">About Us</a></li>
+      <li><a href="contact.html">Contact</a></li>
+      <li><a href="login.html">Staff Login</a></li>
+    </ul>
+  </div>
+
+  <!-- ===== PAGE HERO ===== -->
+  <div class="page-hero">
+    <div class="container">
+      <div class="breadcrumb"><a href="index.html">Home</a><span>/</span>Contact</div>
+      <h1>CONTACT <span>US</span></h1>
+      <p>Get a quote, ask a question or book a service — we respond fast</p>
+    </div>
+  </div>
+
+  <!-- ===== CONTACT SECTION ===== -->
+  <section class="section">
+    <div class="container">
+      <div class="contact-grid">
+
+        <!-- FORM -->
+        <div>
+          <div class="section-eyebrow">Send a Message</div>
+          <h2 class="section-heading" style="font-size:1.6rem;">Request a <span>Quote</span></h2>
+          <p style="color:var(--gray-500);margin:.75rem 0 1.5rem;font-size:14.5px;">Fill in your details and we will get back to you with a quote as soon as possible.</p>
+
+          <div class="contact-form-card">
+            <div id="form-alert" class="alert alert-success d-none">
+              ✅ Your message has been sent! We will contact you shortly.
+            </div>
+            <div id="form-error" class="alert alert-danger d-none">
+              ⚠️ Please fill in all required fields.
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Full Name *</label>
+                <input class="form-control" id="cf-name" type="text" placeholder="Your full name" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Phone Number *</label>
+                <input class="form-control" id="cf-phone" type="tel" placeholder="08XXXXXXXXX" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Email Address</label>
+              <input class="form-control" id="cf-email" type="email" placeholder="your@email.com (optional)" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Service Needed *</label>
+              <select class="form-control" id="cf-service">
+                <option value="">-- Select the service you need --</option>
+                <option value="Cleaning">Cleaning</option>
+                <option value="Laundry">Laundry</option>
+                <option value="Upholstery">Upholstery</option>
+                <option value="Fumigation">Fumigation</option>
+                <option value="Multiple Services">Multiple Services</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Property Type</label>
+              <select class="form-control" id="cf-property">
+                <option value="">-- Select property type --</option>
+                <option>Single Room</option>
+                <option>Flat / Apartment</option>
+                <option>Bungalow</option>
+                <option>Duplex</option>
+                <option>Office / Commercial</option>
+                <option>Other</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Location / Address *</label>
+              <input class="form-control" id="cf-location" type="text" placeholder="Your address in Kaduna" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Message / Additional Details</label>
+              <textarea class="form-control" id="cf-message" rows="4" placeholder="Tell us more about what you need..."></textarea>
+            </div>
+
+            <div style="display:flex;gap:.75rem;flex-wrap:wrap;">
+              <button class="btn btn-primary" onclick="submitContactForm()">Send Message</button>
+              <a href="https://wa.me/2348069051403?text=Hello%20AJIGS%20CONNECT%2C%20I%20need%20a%20quote%20for%20your%20services" class="btn btn-wa" target="_blank">💬 WhatsApp Instead</a>
+            </div>
+
+            <div style="margin-top:1rem;font-size:12.5px;color:var(--gray-400);">
+              * Note: This form sends a notification. For fastest response, use WhatsApp or call directly.
+            </div>
+          </div>
+        </div>
+
+        <!-- CONTACT INFO -->
+        <div>
+          <div class="section-eyebrow">Find Us</div>
+          <h2 class="section-heading" style="font-size:1.6rem;">Contact <span>Details</span></h2>
+          <p style="color:var(--gray-500);margin:.75rem 0 1.5rem;font-size:14.5px;">Reach us by phone, WhatsApp, email, or visit our office in Kawo, Kaduna.</p>
+
+          <div class="contact-info-list">
+            <div class="contact-info-item">
+              <div class="contact-info-icon">📞</div>
+              <div>
+                <div class="contact-info-title">Phone</div>
+                <div class="contact-info-val"><a href="tel:08069051403">08069051403</a></div>
+                <div class="contact-info-sub">Call us during business hours</div>
+              </div>
+            </div>
+
+            <div class="contact-info-item">
+              <div class="contact-info-icon">💬</div>
+              <div>
+                <div class="contact-info-title">WhatsApp</div>
+                <div class="contact-info-val">
+                  <a href="https://wa.me/2348069051403" target="_blank">+234 806 905 1403</a>
+                </div>
+                <div class="contact-info-sub">Fastest way to reach us — we respond quickly</div>
+              </div>
+            </div>
+
+            <div class="contact-info-item">
+              <div class="contact-info-icon">✉️</div>
+              <div>
+                <div class="contact-info-title">Email</div>
+                <div class="contact-info-val" style="font-size:13.5px;">
+                  <a href="mailto:aris.jib.global.services@gmail.com">aris.jib.global.services@gmail.com</a>
+                </div>
+                <div class="contact-info-sub">For formal enquiries and invoices</div>
+              </div>
+            </div>
+
+            <div class="contact-info-item">
+              <div class="contact-info-icon">📍</div>
+              <div>
+                <div class="contact-info-title">Address</div>
+                <div class="contact-info-val" style="font-size:13.5px;">No. 5 Aliyu Asio Street, New Extension Kawo</div>
+                <div class="contact-info-sub">U/Rimi, Kaduna State, Nigeria</div>
+              </div>
+            </div>
+
+            <div class="contact-info-item">
+              <div class="contact-info-icon">🏦</div>
+              <div>
+                <div class="contact-info-title">Bank Payment</div>
+                <div class="contact-info-val" style="font-size:13px;">ARI JIB GLOBAL SERVICES LIMITED</div>
+                <div class="contact-info-sub">Moniepoint · Account: <strong>8069051403</strong></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Payment Note -->
+          <div style="margin-top:1.5rem;background:var(--orange-light);border:1px solid var(--orange-mid);border-radius:var(--radius);padding:1rem 1.25rem;">
+            <div style="font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.8px;color:var(--orange-dark);margin-bottom:.5rem;">Payment Policy</div>
+            <ul style="list-style:none;font-size:13px;color:var(--gray-800);line-height:2;">
+              <li>✓ Payment is required <strong>before work begins</strong></li>
+              <li>✓ Bank Transfer, Cheque, or Cash accepted</li>
+              <li>✓ Invoice issued for every job</li>
+            </ul>
+          </div>
+
+          <!-- Quick WhatsApp Templates -->
+          <div style="margin-top:1.5rem;">
+            <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--gray-500);margin-bottom:.75rem;">Quick WhatsApp Messages</div>
+            <div style="display:flex;flex-direction:column;gap:.5rem;">
+              <a href="https://wa.me/2348069051403?text=Hello%20AJIGS%20CONNECT%2C%20I%20need%20a%20quote%20for%20Fumigation" target="_blank" class="btn btn-wa btn-sm">💨 Fumigation Quote</a>
+              <a href="https://wa.me/2348069051403?text=Hello%20AJIGS%20CONNECT%2C%20I%20need%20a%20quote%20for%20Cleaning" target="_blank" class="btn btn-wa btn-sm">🏠 Cleaning Quote</a>
+              <a href="https://wa.me/2348069051403?text=Hello%20AJIGS%20CONNECT%2C%20I%20need%20a%20quote%20for%20Laundry" target="_blank" class="btn btn-wa btn-sm">👕 Laundry Quote</a>
+              <a href="https://wa.me/2348069051403?text=Hello%20AJIGS%20CONNECT%2C%20I%20need%20a%20quote%20for%20Upholstery%20cleaning" target="_blank" class="btn btn-wa btn-sm">🛋️ Upholstery Quote</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FAQ ===== -->
+  <section class="section-sm" style="background:var(--gray-50);border-top:1px solid var(--gray-200);border-bottom:1px solid var(--gray-200);">
+    <div class="container">
+      <div style="max-width:700px;margin:0 auto;">
+        <div class="text-center">
+          <div class="section-eyebrow">FAQ</div>
+          <h2 class="section-heading">Common <span>Questions</span></h2>
+        </div>
+        <div style="margin-top:2rem;display:flex;flex-direction:column;gap:1rem;">
+          <div class="why-card">
+            <div class="why-title">Do you come to my location?</div>
+            <p class="why-desc">Yes — we come to you. Whether you are in Kawo, Barnawa, GRA, Unguwar Rimi, or anywhere in Kaduna State, our team comes to your address.</p>
+          </div>
+          <div class="why-card">
+            <div class="why-title">When do I pay?</div>
+            <p class="why-desc">Payment is done before work begins. You can pay by Bank Transfer (Moniepoint 8069051403), Cheque, or Cash. A proper invoice is issued for every job.</p>
+          </div>
+          <div class="why-card">
+            <div class="why-title">How do I get a quote?</div>
+            <p class="why-desc">Simply call us, send a WhatsApp message, or fill the form on this page. Describe your property and service needed — we will send you a quote promptly.</p>
+          </div>
+          <div class="why-card">
+            <div class="why-title">Are your chemicals safe?</div>
+            <p class="why-desc">Yes. We use only certified, approved chemicals for all our services — especially fumigation. Our procedures comply with health and safety standards.</p>
+          </div>
+          <div class="why-card">
+            <div class="why-title">How long does a job take?</div>
+            <p class="why-desc">It depends on the property size and service type. A typical duplex fumigation and cleaning takes 3–5 hours. We will give you a time estimate with your quote.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <div class="footer-brand"><span>AJIGS</span> CONNECT</div>
+          <div class="footer-tagline">Cleaning · Laundry · Upholstery · Fumigation</div>
+          <div class="footer-body">RC Number: 7304230 · Kaduna State, Nigeria</div>
+        </div>
+        <div>
+          <div class="footer-title">Quick Links</div>
+          <ul class="footer-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="services.html">Services</a></li>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="footer-title">Services</div>
+          <ul class="footer-links">
+            <li><a href="services.html">Cleaning</a></li>
+            <li><a href="services.html">Laundry</a></li>
+            <li><a href="services.html">Upholstery</a></li>
+            <li><a href="services.html">Fumigation</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="footer-title">Contact</div>
+          <div class="footer-body">
+            No. 5 Aliyu Asio Street, New Extension Kawo<br>
+            U/Rimi, Kaduna State<br><br>
+            <a href="tel:08069051403" style="color:var(--orange);">08069051403</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2025 AJIGS CONNECT · RC 7304230. All rights reserved.</span>
+        <a href="login.html">Staff Portal</a>
+      </div>
+    </div>
+  </footer>
+
+  <a href="https://wa.me/2348069051403" class="wa-fab" target="_blank" title="Chat on WhatsApp">💬</a>
+  <script src="js/main.js"></script>
+</body>
+</html>

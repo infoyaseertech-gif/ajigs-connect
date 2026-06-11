@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Staff Login — AJIGS CONNECT Management System</title>
+  <meta name="theme-color" content="#0a0a0a" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" type="image/png" href="assets/icon-192.png" />
+  <link rel="stylesheet" href="css/erp.css" />
+</head>
+<body>
+
+<div class="login-page">
+  <div class="login-card">
+
+    <!-- Logo -->
+    <div class="login-logo">
+      <div style="display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;background:var(--orange);border-radius:10px;margin-bottom:12px;">
+        <span style="font-family:var(--font-head);font-size:1.1rem;color:#fff;letter-spacing:1px;">AJ</span>
+      </div>
+      <div class="login-logo-text">AJIGS</div>
+      <div class="login-logo-sub">CONNECT</div>
+      <div class="login-logo-tagline">Cleaning · Laundry · Upholstery · Fumigation</div>
+    </div>
+
+    <!-- Title -->
+    <div class="login-title">Management Portal</div>
+
+    <!-- Alerts -->
+    <div id="login-error" class="alert alert-danger d-none"></div>
+    <div id="reset-success" class="alert alert-success d-none"></div>
+
+    <!-- LOGIN FORM -->
+    <div id="login-form">
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input class="form-control" id="login-email" type="email" placeholder="your@email.com" autocomplete="email" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input class="form-control" id="login-pass" type="password" placeholder="••••••••" autocomplete="current-password" />
+      </div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;" id="login-btn" onclick="doLogin()">
+        Sign In to Dashboard
+      </button>
+      <div style="text-align:center;margin-top:1rem;">
+        <a href="#" style="font-size:13px;color:var(--orange);" onclick="showReset()">Forgot Password?</a>
+      </div>
+    </div>
+
+    <!-- FORGOT PASSWORD FORM -->
+    <div id="reset-form" class="d-none">
+      <p style="font-size:13.5px;color:var(--gray-600);margin-bottom:1rem;">Contact the Proprietor to reset your password. Your reset code will be provided directly.</p>
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input class="form-control" id="reset-email" type="email" placeholder="your@email.com" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Reset Code (from Proprietor)</label>
+        <input class="form-control" id="reset-code" type="text" placeholder="6-digit code" maxlength="6" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">New Password</label>
+        <input class="form-control" id="reset-newpass" type="password" placeholder="New password" />
+      </div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="doReset()">Reset Password</button>
+      <div style="text-align:center;margin-top:1rem;">
+        <a href="#" style="font-size:13px;color:var(--orange);" onclick="showLogin()">← Back to Login</a>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div style="margin-top:1.5rem;text-align:center;border-top:1px solid var(--gray-100);padding-top:1rem;">
+      <a href="index.html" style="font-size:12.5px;color:var(--gray-400);">← Back to Website</a>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // =====================================================
+  // LOGIN — uses Supabase auth
+  // Replace YOUR_SUPABASE_URL and YOUR_SUPABASE_ANON_KEY
+  // =====================================================
+  const SUPABASE_URL  = 'YOUR_SUPABASE_URL';
+  const SUPABASE_KEY  = 'YOUR_SUPABASE_ANON_KEY';
+
+  async function doLogin() {
+    const email = document.getElementById('login-email').value.trim();
+    const pass  = document.getElementById('login-pass').value;
+    const errEl = document.getElementById('login-error');
+    errEl.classList.add('d-none');
+
+    if (!email || !pass) {
+      errEl.textContent = 'Please enter your email and password.';
+      errEl.classList.remove('d-none');
+      return;
+    }
+
+    const btn = document.getElementById('login-btn');
+    btn.textContent = 'Signing in…';
+    btn.disabled = true;
+
+    try {
+      const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY },
+        body: JSON.stringify({ email, password: pass })
+      });
+      const data = await res.json();
+
+      if (data.access_token) {
+        // Store session
+        localStorage.setItem('ajigs_token',   data.access_token);
+        localStorage.setItem('ajigs_refresh',  data.refresh_token);
+        localStorage.setItem('ajigs_user_email', email);
+        window.location.href = 'dashboard.html';
+      } else {
+        errEl.textContent = data.error_description || 'Invalid email or password.';
+        errEl.classList.remove('d-none');
+        btn.textContent = 'Sign In to Dashboard';
+        btn.disabled = false;
+      }
+    } catch(e) {
+      errEl.textContent = 'Connection error. Check your internet and try again.';
+      errEl.classList.remove('d-none');
+      btn.textContent = 'Sign In to Dashboard';
+      btn.disabled = false;
+    }
+  }
+
+  function showReset() {
+    document.getElementById('login-form').classList.add('d-none');
+    document.getElementById('reset-form').classList.remove('d-none');
+    document.getElementById('login-error').classList.add('d-none');
+  }
+  function showLogin() {
+    document.getElementById('reset-form').classList.add('d-none');
+    document.getElementById('login-form').classList.remove('d-none');
+  }
+
+  function doReset() {
+    const email   = document.getElementById('reset-email').value.trim();
+    const code    = document.getElementById('reset-code').value.trim();
+    const newpass = document.getElementById('reset-newpass').value;
+    const errEl   = document.getElementById('login-error');
+    const okEl    = document.getElementById('reset-success');
+    errEl.classList.add('d-none');
+    okEl.classList.add('d-none');
+
+    if (!email || !code || !newpass) {
+      errEl.textContent = 'Please fill all fields.';
+      errEl.classList.remove('d-none');
+      return;
+    }
+    // In production: validate reset code from Supabase or your backend
+    okEl.textContent = 'If the code is valid, your password has been reset. Contact your Proprietor to confirm.';
+    okEl.classList.remove('d-none');
+  }
+
+  // Allow Enter key
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter') doLogin();
+  });
+
+  // Redirect if already logged in
+  if (localStorage.getItem('ajigs_token')) {
+    window.location.href = 'dashboard.html';
+  }
+</script>
+</body>
+</html>

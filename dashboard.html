@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — AJIGS CONNECT Management System</title>
+  <meta name="theme-color" content="#0a0a0a" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" type="image/png" href="assets/icon-192.png" />
+  <link rel="stylesheet" href="css/erp.css" />
+</head>
+<body>
+
+<!-- ====================================================
+     TOP BAR
+===================================================== -->
+<header class="topbar">
+  <div class="topbar-left">
+    <div class="topbar-brand">
+      <div class="brand-logo-box">AJ</div>
+      <div class="brand-text">
+        AJIGS <span style="color:var(--orange)">CONNECT</span>
+        <small>Management System</small>
+      </div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="topbar-user">
+      <div class="user-avatar" id="topbar-avatar">P</div>
+      <div>
+        <div id="topbar-name" style="font-size:13px;color:var(--white);font-weight:600;"></div>
+        <div id="topbar-role" style="font-size:11px;color:var(--orange);"></div>
+      </div>
+    </div>
+    <div class="topbar-divider"></div>
+    <button class="topbar-btn" onclick="window.open('index.html','_blank')">🌐 Website</button>
+    <button class="topbar-btn" onclick="doLogout()">Sign Out</button>
+  </div>
+</header>
+
+<!-- ====================================================
+     APP LAYOUT
+===================================================== -->
+<div class="app-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-section">Overview</div>
+    <div class="sidebar-item active" data-panel="dashboard" onclick="navTo('dashboard',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+      Dashboard
+    </div>
+
+    <div class="sidebar-section">Operations</div>
+    <div class="sidebar-item" data-panel="jobs" onclick="navTo('jobs',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
+      Jobs
+    </div>
+    <div class="sidebar-item" data-panel="invoices" onclick="navTo('invoices',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      Invoices
+    </div>
+    <div class="sidebar-item" data-panel="clients" onclick="navTo('clients',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+      Clients
+    </div>
+
+    <div class="sidebar-section">Finance</div>
+    <div class="sidebar-item" data-panel="expenses" onclick="navTo('expenses',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+      Expenses
+    </div>
+    <div class="sidebar-item" data-panel="reports" onclick="navTo('reports',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Reports
+    </div>
+
+    <div class="sidebar-section">Admin</div>
+    <div class="sidebar-item" data-panel="staff" onclick="navTo('staff',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+      Staff
+    </div>
+    <div class="sidebar-item" data-panel="users" id="nav-users" onclick="navTo('users',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+      Users
+    </div>
+    <div class="sidebar-item" data-panel="profile" onclick="navTo('profile',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      My Profile
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+    <div class="content-area">
+
+      <!-- ==================== DASHBOARD ==================== -->
+      <div id="panel-dashboard" class="panel active">
+        <div class="page-header">
+          <div>
+            <div class="page-title">DASHBOARD</div>
+            <div class="page-subtitle" id="dash-date"></div>
+          </div>
+          <button class="btn btn-primary" onclick="navTo('invoices',document.querySelector('[data-panel=invoices]'))">+ New Invoice</button>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-row" id="dash-stats"></div>
+
+        <!-- Revenue by Service -->
+        <div class="dash-grid">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Revenue by Service</div>
+            </div>
+            <div class="card-body" id="dash-by-service"></div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Job Status Overview</div>
+            </div>
+            <div class="card-body" id="dash-job-status"></div>
+          </div>
+        </div>
+
+        <!-- Recent Jobs -->
+        <div class="card" style="margin-top:1.25rem;">
+          <div class="card-header">
+            <div class="card-title">Recent Jobs</div>
+            <button class="btn btn-secondary btn-sm" onclick="navTo('jobs',document.querySelector('[data-panel=jobs]'))">View All</button>
+          </div>
+          <div class="table-wrap" style="border:none;border-radius:0;" id="dash-recent-jobs"></div>
+        </div>
+      </div>
+
+      <!-- ==================== JOBS ==================== -->
+      <div id="panel-jobs" class="panel">
+        <div class="page-header">
+          <div>
+            <div class="page-title">JOB MANAGEMENT</div>
+            <div class="page-subtitle" id="jobs-subtitle"></div>
+          </div>
+          <button class="btn btn-primary" onclick="openJobModal()">+ New Job</button>
+        </div>
+        <div class="filter-bar">
+          <input class="form-control filter-search" id="job-search" placeholder="🔍  Search client, service, staff…" oninput="renderJobs()">
+          <select class="form-control" id="job-filter-status" onchange="renderJobs()">
+            <option value="">All Status</option>
+            <option>Pending</option><option>In Progress</option>
+            <option>Completed</option><option>Invoiced</option>
+          </select>
+          <select class="form-control" id="job-filter-service" onchange="renderJobs()">
+            <option value="">All Services</option>
+            <option>Cleaning</option><option>Laundry</option>
+            <option>Upholstery</option><option>Fumigation</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th>#</th><th>Client</th><th>Service</th><th>Scheduled</th>
+              <th>Staff</th><th>Amount</th><th>Status</th><th>Actions</th>
+            </tr></thead>
+            <tbody id="jobs-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ==================== INVOICES ==================== -->
+      <div id="panel-invoices" class="panel">
+        <div class="page-header">
+          <div>
+            <div class="page-title">INVOICES</div>
+            <div class="page-subtitle" id="inv-subtitle"></div>
+          </div>
+          <button class="btn btn-primary" onclick="openInvoiceModal()">+ New Invoice</button>
+        </div>
+        <div class="filter-bar">
+          <input class="form-control filter-search" id="inv-search" placeholder="🔍  Search client, invoice number…" oninput="renderInvoices()">
+          <select class="form-control" id="inv-filter-status" onchange="renderInvoices()">
+            <option value="">All Status</option>
+            <option>Paid</option><option>Unpaid</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th>Invoice #</th><th>Client</th><th>Service(s)</th>
+              <th>Date</th><th>Amount</th><th>Status</th><th>Actions</th>
+            </tr></thead>
+            <tbody id="invoices-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ==================== CLIENTS ==================== -->
+      <div id="panel-clients" class="panel">
+        <div class="page-header">
+          <div>
+            <div class="page-title">CLIENTS</div>
+            <div class="page-subtitle" id="clients-subtitle"></div>
+          </div>
+          <button class="btn btn-primary" onclick="openClientModal()">+ Add Client</button>
+        </div>
+        <div class="filter-bar">
+          <input class="form-control filter-search" id="client-search" placeholder="🔍  Search name, phone, location…" oninput="renderClients()">
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th>#</th><th>Name</th><th>Phone</th><th>Location</th>
+              <th>Total Jobs</th><th>Total Invoiced</th><th>Actions</th>
+            </tr></thead>
+            <tbody id="clients-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ==================== EXPENSES ==================== -->
+      <div id="panel-expenses" class="panel">
+        <div class="page-header">
+          <div>
+            <div class="page-title">EXPENSES</div>
+            <div class="page-subtitle" id="exp-subtitle"></div>
+          </div>
+          <button class="btn btn-primary" onclick="openExpenseModal()">+ Add Expense</button>
+        </div>
+        <div class="filter-bar">
+          <input class="form-control filter-search" id="exp-search" placeholder="🔍  Search description…" oninput="renderExpenses()">
+          <select class="form-control" id="exp-filter-cat" onchange="renderExpenses()">
+            <option value="">All Categories</option>
+            <option>Fuel</option><option>Equipment</option><option>Chemicals</option>
+            <option>Salaries</option><option>Rent</option><option>Utilities</option>
+            <option>Marketing</option><option>Other</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th>Date</th><th>Description</th><th>Category</th>
+              <th>Amount</th><th>Added By</th><th>Actions</th>
+            </tr></thead>
+            <tbody id="expenses-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ==================== STAFF ==================== -->
+      <div id="panel-staff" class="panel">
+        <div class="page-header">
+          <div>
+            <div class="page-title">STAFF</div>
+            <div class="page-subtitle" id="staff-subtitle"></div>
+          </div>
+          <button class="btn btn-primary" onclick="openStaffModal()">+ Add Staff</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th>#</th><th>Name</th><th>Role</th><th>Phone</th>
+              <th>Status</th><th>Assigned Jobs</th><th>Actions</th>
+            </tr></thead>
+            <tbody id="staff-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ==================== REPORTS ==================== -->
+      <div id="panel-reports" class="panel">
+        <div class="page-header">
+          <div><div class="page-title">REPORTS</div></div>
+        </div>
+        <div class="stats-row" id="report-stats"></div>
+        <div class="dash-grid">
+          <div class="card">
+            <div class="card-header"><div class="card-title">Revenue by Service</div></div>
+            <div class="card-body" id="report-by-service"></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">Expenses by Category</div></div>
+            <div class="card-body" id="report-by-cat"></div>
+          </div>
+        </div>
+        <div class="card" style="margin-top:1.25rem;">
+          <div class="card-header"><div class="card-title">All Invoices Summary</div></div>
+          <div class="table-wrap" style="border:none;border-radius:0;" id="report-inv-table"></div>
+        </div>
+      </div>
+
+      <!-- ==================== USERS ==================== -->
+      <div id="panel-users" class="panel">
+        <div class="page-header">
+          <div><div class="page-title">USER MANAGEMENT</div></div>
+          <button class="btn btn-primary" onclick="openUserModal()">+ Add User</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Actions</th>
+            </tr></thead>
+            <tbody id="users-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ==================== PROFILE ==================== -->
+      <div id="panel-profile" class="panel">
+        <div class="page-header">
+          <div><div class="page-title">MY PROFILE</div></div>
+        </div>
+        <div style="max-width:440px;">
+          <div class="card">
+            <div class="card-body">
+              <div class="profile-avatar" id="profile-avatar">P</div>
+              <div id="profile-info"></div>
+              <hr class="divider">
+              <div style="font-family:var(--font-head);font-size:.9rem;letter-spacing:1px;margin-bottom:1rem;">CHANGE PASSWORD</div>
+              <div id="profile-alert" class="alert alert-success d-none">Password updated successfully!</div>
+              <div id="profile-error" class="alert alert-danger d-none"></div>
+              <div class="form-group">
+                <label class="form-label">New Password</label>
+                <input class="form-control" id="profile-newpass" type="password" placeholder="Enter new password">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Confirm Password</label>
+                <input class="form-control" id="profile-confpass" type="password" placeholder="Confirm new password">
+              </div>
+              <button class="btn btn-primary" onclick="changeMyPassword()">Update Password</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end content-area -->
+  </main>
+</div>
+
+<!-- ====================================================
+     MODALS
+===================================================== -->
+
+<!-- JOB MODAL -->
+<div class="modal-overlay" id="modal-job">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-job-title">New Job</div>
+      <button class="modal-close" onclick="closeModal('modal-job')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Client Name *</label>
+          <input class="form-control" id="job-client" placeholder="Client full name">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone</label>
+          <input class="form-control" id="job-phone" placeholder="08XXXXXXXXX">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Client Address</label>
+        <input class="form-control" id="job-address" placeholder="Address or location in Kaduna">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Service *</label>
+          <select class="form-control" id="job-service">
+            <option value="">-- Select Service --</option>
+            <option>Cleaning</option><option>Laundry</option>
+            <option>Upholstery</option><option>Fumigation</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Scheduled Date</label>
+          <input class="form-control" id="job-date" type="date">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Assign Staff</label>
+          <select class="form-control" id="job-staff">
+            <option value="">-- Unassigned --</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Amount (₦)</label>
+          <input class="form-control" id="job-amount" type="number" placeholder="0">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Status</label>
+        <select class="form-control" id="job-status">
+          <option>Pending</option><option>In Progress</option>
+          <option>Completed</option><option>Invoiced</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description / Notes</label>
+        <textarea class="form-control" id="job-desc" rows="3" placeholder="Brief description of the job…"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-job')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveJob()">Save Job</button>
+    </div>
+  </div>
+</div>
+
+<!-- INVOICE CREATE MODAL -->
+<div class="modal-overlay" id="modal-invoice-create">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-inv-title">New Invoice</div>
+      <button class="modal-close" onclick="closeModal('modal-invoice-create')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Bill To (Client Name) *</label>
+          <input class="form-control" id="cinv-client" placeholder="Client full name">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Client Address</label>
+          <input class="form-control" id="cinv-caddr" placeholder="e.g. Sabon Kawo, Kaduna">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Invoice Date</label>
+          <input class="form-control" id="cinv-date" type="date">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Due Date</label>
+          <input class="form-control" id="cinv-due" type="date">
+        </div>
+      </div>
+
+      <div class="flex-between mt-2 mb-1">
+        <div style="font-family:var(--font-head);font-size:.85rem;letter-spacing:1px;">LINE ITEMS</div>
+        <button class="btn btn-secondary btn-sm" onclick="addInvItem()">+ Add Item</button>
+      </div>
+      <div id="cinv-items-wrap"></div>
+
+      <div class="form-row mt-2">
+        <div class="form-group">
+          <label class="form-label">Payment Status</label>
+          <select class="form-control" id="cinv-status">
+            <option>Unpaid</option><option>Paid</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <div style="background:var(--gray-50);border:1px solid var(--gray-200);border-radius:var(--radius);padding:12px 14px;margin-top:22px;">
+            <div style="font-size:12px;color:var(--gray-400);">Invoice Total</div>
+            <div style="font-family:var(--font-head);font-size:1.5rem;color:var(--black);" id="cinv-running-total">₦0</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-invoice-create')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveInvoice()">Save Invoice</button>
+    </div>
+  </div>
+</div>
+
+<!-- INVOICE VIEW/PRINT MODAL -->
+<div class="modal-overlay" id="modal-invoice-view">
+  <div class="modal modal-xl">
+    <div class="modal-header">
+      <div class="modal-title">Invoice Preview</div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <button class="btn btn-primary btn-sm" onclick="printInvoice()">🖨️ Print / Save PDF</button>
+        <button class="modal-close" onclick="closeModal('modal-invoice-view')">×</button>
+      </div>
+    </div>
+    <div class="modal-body" style="padding:0;">
+      <div id="invoice-view-area"></div>
+    </div>
+  </div>
+</div>
+
+<!-- CLIENT MODAL -->
+<div class="modal-overlay" id="modal-client">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-client-title">Add Client</div>
+      <button class="modal-close" onclick="closeModal('modal-client')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Full Name *</label>
+        <input class="form-control" id="client-name" placeholder="Client full name">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Phone</label>
+          <input class="form-control" id="client-phone" placeholder="08XXXXXXXXX">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Location</label>
+          <input class="form-control" id="client-loc" placeholder="e.g. Barnawa, Kaduna">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Full Address</label>
+        <input class="form-control" id="client-addr" placeholder="Street address">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-client')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveClient()">Save Client</button>
+    </div>
+  </div>
+</div>
+
+<!-- EXPENSE MODAL -->
+<div class="modal-overlay" id="modal-expense">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-exp-title">Add Expense</div>
+      <button class="modal-close" onclick="closeModal('modal-expense')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Description *</label>
+        <input class="form-control" id="exp-desc" placeholder="What was the expense for?">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Category</label>
+          <select class="form-control" id="exp-cat">
+            <option>Fuel</option><option>Equipment</option><option>Chemicals</option>
+            <option>Salaries</option><option>Rent</option><option>Utilities</option>
+            <option>Marketing</option><option>Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Amount (₦) *</label>
+          <input class="form-control" id="exp-amount" type="number" placeholder="0">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Date</label>
+        <input class="form-control" id="exp-date" type="date">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-expense')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveExpense()">Save Expense</button>
+    </div>
+  </div>
+</div>
+
+<!-- STAFF MODAL -->
+<div class="modal-overlay" id="modal-staff">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-staff-title">Add Staff</div>
+      <button class="modal-close" onclick="closeModal('modal-staff')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Full Name *</label>
+          <input class="form-control" id="staff-name" placeholder="Staff full name">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Role</label>
+          <input class="form-control" id="staff-role" placeholder="e.g. Field Technician">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Phone</label>
+          <input class="form-control" id="staff-phone" placeholder="08XXXXXXXXX">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          <select class="form-control" id="staff-status">
+            <option>Active</option><option>Inactive</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-staff')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveStaff()">Save Staff</button>
+    </div>
+  </div>
+</div>
+
+<!-- USER MODAL -->
+<div class="modal-overlay" id="modal-user">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-user-title">Add User</div>
+      <button class="modal-close" onclick="closeModal('modal-user')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Full Name *</label>
+          <input class="form-control" id="user-name" placeholder="User full name">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email *</label>
+          <input class="form-control" id="user-email" type="email" placeholder="user@email.com">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Password *</label>
+          <input class="form-control" id="user-pass" type="password" placeholder="Set password">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Role</label>
+          <select class="form-control" id="user-role">
+            <option>Staff</option><option>Proprietor</option>
+          </select>
+        </div>
+      </div>
+      <div id="user-modal-alert" class="alert alert-danger d-none"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-user')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveUser()">Save User</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/erp.js"></script>
+</body>
+</html>

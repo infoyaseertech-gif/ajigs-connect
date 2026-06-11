@@ -1,0 +1,331 @@
+================================================================
+  AJIGS CONNECT — FULL DEPLOYMENT INSTRUCTIONS
+  Developer: YaseerTech (yaseertech.vercel.app)
+  System: Public Website + Business Management ERP
+  Stack:  Vanilla HTML/CSS/JS + Supabase + Vercel
+================================================================
+
+
+================================================================
+  PROJECT FILE STRUCTURE
+================================================================
+
+ajigs/
+├── index.html          ← Public homepage
+├── about.html          ← About page
+├── services.html       ← Services page
+├── contact.html        ← Contact + quote form
+├── login.html          ← Staff login portal
+├── dashboard.html      ← Full ERP management system
+├── sw.js               ← Service Worker (PWA)
+├── manifest.json       ← PWA manifest
+├── css/
+│   ├── style.css       ← Public website styles
+│   └── erp.css         ← Dashboard/ERP styles
+├── js/
+│   ├── main.js         ← Public website JavaScript
+│   ├── erp.js          ← Full ERP logic + Supabase calls
+│   └── pwa.js          ← PWA install + update prompt
+├── assets/             ← Create this folder manually
+│   ├── icon-192.png    ← App icon (192×192px) — use AJIGS logo
+│   └── icon-512.png    ← App icon (512×512px) — use AJIGS logo
+├── SUPABASE_SETUP.sql  ← Run in Supabase SQL Editor
+└── INSTRUCTIONS.txt    ← This file
+
+
+================================================================
+  STEP 1 — CREATE SUPABASE PROJECT
+================================================================
+
+1. Go to https://supabase.com and sign in (or create a free account)
+
+2. Click "New Project"
+   - Organization: your account
+   - Name: ajigs-connect
+   - Database Password: choose a strong password — SAVE IT
+   - Region: West EU (Ireland) or closest to Nigeria available
+   - Click "Create new project" and wait ~2 minutes
+
+3. Once project is ready, go to:
+   Settings → API
+
+4. Copy and save these two values:
+   - Project URL:  looks like https://xxxxxxxxxxxx.supabase.co
+   - anon (public) key: a long string starting with "eyJ..."
+
+   You will paste these into two files:
+   → login.html   (lines near top: SUPABASE_URL and SUPABASE_KEY)
+   → js/erp.js    (lines 1-3: SUPABASE_URL and SUPABASE_KEY)
+
+
+================================================================
+  STEP 2 — RUN THE DATABASE SETUP SQL
+================================================================
+
+1. In Supabase, click "SQL Editor" in the left sidebar
+
+2. Click "New query"
+
+3. Open the file SUPABASE_SETUP.sql in a text editor
+   Copy ALL its contents and paste into the Supabase SQL Editor
+
+4. Click "Run" (green button, or Ctrl+Enter)
+
+5. You should see: "Success. No rows returned"
+
+6. Verify the tables were created:
+   - Click "Table Editor" in the left sidebar
+   - You should see: app_users, clients, staff, jobs, invoices, expenses
+
+7. Verify the invoice sequence starts at 129:
+   - In SQL Editor run: SELECT last_value FROM public.invoices_id_seq;
+   - Result should be: 128
+   - This means the NEXT invoice created will be INV-129  ✓
+
+
+================================================================
+  STEP 3 — CREATE THE PROPRIETOR LOGIN IN SUPABASE AUTH
+================================================================
+
+The SQL already inserted the Proprietor profile row into app_users.
+Now you must create the actual LOGIN credentials in Supabase Auth:
+
+1. In Supabase, click "Authentication" → "Users" → "Add user"
+
+2. Fill in:
+   - Email:    admin@ajigs.com
+   - Password: (choose a strong password — share only with owner)
+   - Auto Confirm User: YES (tick this)
+   - Click "Create User"
+
+3. That's it. The owner can now log in at /login.html with:
+   Email:    admin@ajigs.com
+   Password: (whatever you set above)
+
+TO ADD MORE STAFF USERS LATER:
+   - Go to Authentication → Users → Add user
+   - Use their real email and a temporary password
+   - Then in the dashboard → Users panel, add their profile row
+   - The staff member logs in and changes their password from My Profile
+
+
+================================================================
+  STEP 4 — REPLACE PLACEHOLDER VALUES IN CODE
+================================================================
+
+Open login.html — find these two lines near the top of the
+<script> tag and replace:
+
+  const SUPABASE_URL  = 'YOUR_SUPABASE_URL';
+  const SUPABASE_KEY  = 'YOUR_SUPABASE_ANON_KEY';
+
+Replace with your actual values, example:
+  const SUPABASE_URL  = 'https://abcdefghij.supabase.co';
+  const SUPABASE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
+
+Open js/erp.js — find the same two lines at the top and replace
+with your actual Supabase URL and anon key.
+
+
+================================================================
+  STEP 5 — ADD YOUR APP ICONS (REQUIRED FOR PWA)
+================================================================
+
+1. Create a folder called "assets" inside the project root:
+   ajigs/assets/
+
+2. Export or resize the AJIGS CONNECT logo to:
+   - icon-192.png  (192 × 192 pixels)
+   - icon-512.png  (512 × 512 pixels)
+
+   Use any of these tools:
+   - https://www.canva.com (resize and export)
+   - https://www.remove.bg (if you need background removed first)
+   - https://realfavicongenerator.net (paste logo, get all sizes)
+
+3. Place both files in: ajigs/assets/
+
+NOTE: If you skip this step, the PWA will still work but
+      the home screen icon will show a blank/broken image.
+
+
+================================================================
+  STEP 6 — DEPLOY TO VERCEL (FREE HOSTING)
+================================================================
+
+OPTION A — Deploy via GitHub (Recommended):
+
+1. Create a GitHub account if you don't have one: https://github.com
+
+2. Create a new repository:
+   - Click "+" → "New repository"
+   - Name: ajigs-connect
+   - Set to Private (recommended)
+   - Click "Create repository"
+
+3. Upload all project files to the repository:
+   - Drag and drop all files in the correct folders
+   - OR use GitHub Desktop app for easier upload
+   - Commit message: "Initial deployment — AJIGS CONNECT"
+
+4. Go to https://vercel.com and sign in with your GitHub account
+
+5. Click "Add New Project" → Import your ajigs-connect repository
+
+6. Settings:
+   - Framework Preset: Other (leave as default)
+   - Root Directory: ./ (leave as default)
+   - Build Command: leave EMPTY
+   - Output Directory: leave EMPTY
+   - Click "Deploy"
+
+7. Vercel will deploy in about 30 seconds.
+   Your site will be live at: https://ajigs-connect.vercel.app
+   (or a similar auto-generated URL)
+
+8. OPTIONAL — Add a custom domain:
+   - In Vercel project → Settings → Domains
+   - Add: ajigs.com.ng or ajigskaduna.com (buy domain first)
+   - Follow Vercel's DNS instructions
+
+
+OPTION B — Deploy by dragging files (No GitHub needed):
+
+1. Go to https://vercel.com → sign in
+
+2. Go to your dashboard
+
+3. Drag and drop the entire "ajigs" folder onto the Vercel dashboard
+
+4. Vercel deploys automatically — you get a live URL in 30 seconds
+
+
+================================================================
+  STEP 7 — TEST EVERYTHING AFTER DEPLOYMENT
+================================================================
+
+Test the PUBLIC WEBSITE:
+□ Homepage loads and all sections are visible
+□ Navbar links work (Services, About, Contact)
+□ WhatsApp floating button opens WhatsApp correctly
+□ Contact form sends WhatsApp message
+□ Website is mobile responsive (test on phone)
+
+Test the MANAGEMENT SYSTEM:
+□ Login page loads at /login.html
+□ Login with admin@ajigs.com and your password works
+□ Dashboard loads and shows stats
+□ Create a new job
+□ Create a new invoice — verify it starts at INV-129
+□ View invoice — verify it looks exactly like Invoice #128
+□ Print/PDF invoice — verify it prints correctly
+□ Create a client
+□ Add an expense
+□ Add a staff member
+□ Reports page shows charts
+□ Sign out works
+□ Sign back in works
+
+Test PWA installation:
+□ Open site on mobile phone in Chrome
+□ Chrome should show "Add to Home Screen" prompt
+□ Install it and confirm icon appears on home screen
+□ Open from home screen — should open fullscreen (no address bar)
+
+
+================================================================
+  STEP 8 — GOING LIVE CHECKLIST
+================================================================
+
+Before handing over to the client:
+
+□ Supabase URL and Key replaced in login.html and js/erp.js
+□ SUPABASE_SETUP.sql has been run successfully
+□ Proprietor account created in Supabase Auth
+□ Invoice #128 seed data is in the database
+□ Invoice sequence confirmed starting at 129
+□ App icons (icon-192.png, icon-512.png) added in /assets/
+□ Deployed to Vercel
+□ Tested on desktop and mobile
+□ Shared login credentials with client (owner only)
+□ Deleted or secured this INSTRUCTIONS.txt file from public view
+
+
+================================================================
+  IMPORTANT NOTES FOR THE CLIENT (PROPRIETOR)
+================================================================
+
+INVOICE NUMBERING:
+- Your existing invoices go up to #128
+- The system automatically continues from #129 onwards
+- Every invoice printed from the system matches your
+  exact Invoice #128 format with your logo, RC number,
+  address, bank details and payment terms
+
+PAYMENT TERMS ON EVERY INVOICE:
+  - Payment is done before the work starts
+  - Payment methods: Bank Transfer, Cheque, or Cash
+  - Bank Details: ARI JIB GLOBAL SERVICES LIMITED
+                  (MONIEPOINT) 8069051403
+
+DATA SECURITY:
+- All data is stored securely in Supabase cloud
+- Data syncs across all devices (phone, tablet, laptop)
+- Staff only see what the Proprietor allows them to see
+- Only Proprietor can delete records
+
+STAFF ACCOUNTS:
+- Only the Proprietor can create new user accounts
+- Go to Dashboard → Users → Add User
+- After creating the account in Supabase Auth, add the
+  profile in the Users panel
+
+BACKUP:
+- Data is automatically backed up by Supabase
+- You can export any table from Supabase → Table Editor → Export
+- Export invoices as CSV before any major changes
+
+
+================================================================
+  SUPABASE FREE PLAN LIMITS (as of 2025)
+================================================================
+
+Free plan includes:
+- 500MB database storage (sufficient for years of AJIGS data)
+- 5GB bandwidth per month
+- 50,000 monthly active users
+- Unlimited API requests
+- Automatic backups
+
+AJIGS CONNECT will comfortably run on the free plan.
+Upgrade only needed if data exceeds 500MB (very unlikely).
+
+
+================================================================
+  TECH STACK SUMMARY
+================================================================
+
+Frontend:   Vanilla HTML5, CSS3, JavaScript (ES6+)
+Backend:    Supabase (PostgreSQL database + Auth + REST API)
+Hosting:    Vercel (free, global CDN)
+PWA:        Service Worker, Web App Manifest
+Fonts:      Google Fonts — Oswald + Source Sans 3
+No frameworks, no npm, no build tools needed.
+Works on any device with a modern browser.
+
+
+================================================================
+  SUPPORT
+================================================================
+
+Developer:  YaseerTech
+Website:    yaseertech.vercel.app
+Location:   Wuse 2, Abuja / Kaduna, Nigeria
+Services:   Web Development, ERP Systems, ICT Training,
+            Social Media Marketing, Graphic Design
+
+For bugs, changes, or new features — contact YaseerTech.
+
+================================================================
+  END OF INSTRUCTIONS
+================================================================
