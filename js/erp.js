@@ -9,8 +9,8 @@
 // =====================================================
 //  SUPABASE CONFIG  — replace with your project values
 // =====================================================
-const SUPABASE_URL  = 'YOUR_SUPABASE_URL';
-const SUPABASE_KEY  = 'YOUR_SUPABASE_ANON_KEY';
+const SUPABASE_URL  = 'https://pelkootzjmcppuljgbqs.supabase.co';
+const SUPABASE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBlbGtvb3R6am1jcHB1bGpnYnFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk4MDY3NDEsImV4cCI6MjA5NTM4Mjc0MX0.rjuqM25Tx0pQNm-vZ9VdxkePimuUqYapU9bwmUhx2fw';
 
 // =====================================================
 //  SUPABASE FETCH HELPER
@@ -154,9 +154,9 @@ async function renderDashboard() {
 
   // Fetch data
   const [invoices, jobs, expenses] = await Promise.all([
-    sb('invoices?select=*&order=id.desc'),
-    sb('jobs?select=*&order=id.desc'),
-    sb('expenses?select=*'),
+    sb('ajigs_invoices?select=*&order=id.desc'),
+    sb('ajigs_jobs?select=*&order=id.desc'),
+    sb('ajigs_expenses?select=*'),
   ]);
 
   if (!invoices || !jobs || !expenses) return;
@@ -296,7 +296,7 @@ async function openJobModal(id = null) {
   document.getElementById('modal-job-title').textContent = id ? 'Edit Job' : 'New Job';
 
   // Load staff for dropdown
-  const staff = await sb('staff?status=eq.Active&select=name&order=name.asc');
+  const staff = await sb('ajigs_staff?status=eq.Active&select=name&order=name.asc');
   const staffEl = document.getElementById('job-staff');
   staffEl.innerHTML = '<option value="">-- Unassigned --</option>' +
     (staff || []).map(s => `<option value="${s.name}">${s.name}</option>`).join('');
@@ -348,7 +348,7 @@ async function saveJob() {
   if (editingId.jobs) {
     await sb(`jobs?id=eq.${editingId.jobs}`, 'PATCH', data);
   } else {
-    await sb('jobs', 'POST', { ...data, created_at: new Date().toISOString() });
+    await sb('ajigs_jobs', 'POST', { ...data, created_at: new Date().toISOString() });
   }
   closeModal('modal-job');
   renderJobs();
@@ -534,7 +534,7 @@ async function saveInvoice() {
   if (editingId.invoices) {
     await sb(`invoices?id=eq.${editingId.invoices}`, 'PATCH', data);
   } else {
-    await sb('invoices', 'POST', { ...data, created_at: new Date().toISOString() });
+    await sb('ajigs_invoices', 'POST', { ...data, created_at: new Date().toISOString() });
   }
   closeModal('modal-invoice-create');
   renderInvoices();
@@ -719,7 +719,7 @@ function printInvoice() {
 // =====================================================
 async function renderClients() {
   const search = (document.getElementById('client-search') || {}).value || '';
-  const clients = await sb('clients?select=*&order=name.asc');
+  const clients = await sb('ajigs_clients?select=*&order=name.asc');
   if (!clients) return;
 
   const filtered = search
@@ -740,8 +740,8 @@ async function renderClients() {
 
   // Get job + invoice counts per client
   const [jobs, invoices] = await Promise.all([
-    sb('jobs?select=client_name'),
-    sb('invoices?select=client_name,items'),
+    sb('ajigs_jobs?select=client_name'),
+    sb('ajigs_invoices?select=client_name,items'),
   ]);
 
   tbody.innerHTML = filtered.map((c, i) => {
@@ -803,7 +803,7 @@ async function saveClient() {
   if (editingId.clients) {
     await sb(`clients?id=eq.${editingId.clients}`, 'PATCH', data);
   } else {
-    await sb('clients', 'POST', { ...data, created_by: currentUser.name });
+    await sb('ajigs_clients', 'POST', { ...data, created_by: currentUser.name });
   }
   closeModal('modal-client');
   renderClients();
@@ -897,7 +897,7 @@ async function saveExpense() {
   if (editingId.expenses) {
     await sb(`expenses?id=eq.${editingId.expenses}`, 'PATCH', data);
   } else {
-    await sb('expenses', 'POST', data);
+    await sb('ajigs_expenses', 'POST', data);
   }
   closeModal('modal-expense');
   renderExpenses();
@@ -913,8 +913,8 @@ async function deleteExpense(id) {
 //  STAFF
 // =====================================================
 async function renderStaff() {
-  const staff = await sb('staff?select=*&order=name.asc');
-  const jobs  = await sb('jobs?select=assigned_staff');
+  const staff = await sb('ajigs_staff?select=*&order=name.asc');
+  const jobs  = await sb('ajigs_jobs?select=assigned_staff');
   if (!staff) return;
 
   const subtitle = document.getElementById('staff-subtitle');
@@ -983,7 +983,7 @@ async function saveStaff() {
   if (editingId.staff) {
     await sb(`staff?id=eq.${editingId.staff}`, 'PATCH', data);
   } else {
-    await sb('staff', 'POST', data);
+    await sb('ajigs_staff', 'POST', data);
   }
   closeModal('modal-staff');
   renderStaff();
@@ -1000,8 +1000,8 @@ async function deleteStaff(id) {
 // =====================================================
 async function renderReports() {
   const [invoices, expenses] = await Promise.all([
-    sb('invoices?select=*'),
-    sb('expenses?select=*'),
+    sb('ajigs_invoices?select=*'),
+    sb('ajigs_expenses?select=*'),
   ]);
   if (!invoices || !expenses) return;
 
@@ -1073,7 +1073,7 @@ async function renderUsers() {
     document.getElementById('panel-users').innerHTML = '<div class="card"><div class="card-body text-muted">Access restricted to Proprietor only.</div></div>';
     return;
   }
-  const users = await sb('app_users?select=*&order=name.asc');
+  const users = await sb('ajigs_app_users?select=*&order=name.asc');
   if (!users) return;
 
   const tbody = document.getElementById('users-tbody');
@@ -1129,7 +1129,7 @@ async function saveUser() {
     // Create Supabase auth user via your backend or Supabase Admin API
     // In production: use Supabase Admin SDK on server or use Edge Functions
     // Here we just insert into app_users table
-    await sb('app_users', 'POST', {
+    await sb('ajigs_app_users', 'POST', {
       name, email,
       role: document.getElementById('user-role').value,
       is_active: true,
