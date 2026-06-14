@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gallery — AJIGS CONNECT | Our Completed Projects</title>
+  <meta name="description" content="See real projects completed by AJIGS CONNECT — Construction, Materials Supply, Automobiles, Engineering and Cleaning Services in Kaduna State." />
+  <meta name="theme-color" content="#0a0a0a" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" type="image/png" href="assets/icon-192.png" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .gallery-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:2rem;justify-content:center;}
+    .gallery-filter-btn{padding:8px 18px;border-radius:20px;border:1.5px solid var(--gray-200);background:var(--white);font-size:13px;font-weight:600;cursor:pointer;transition:.15s;color:var(--gray-600);}
+    .gallery-filter-btn:hover{border-color:var(--orange);color:var(--orange);}
+    .gallery-filter-btn.active{background:var(--orange);color:#fff;border-color:var(--orange);}
+    .gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.25rem;}
+    .gallery-item{position:relative;border-radius:var(--radius);overflow:hidden;aspect-ratio:4/3;background:var(--gray-100);cursor:pointer;border:1px solid var(--gray-200);}
+    .gallery-item img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s;}
+    .gallery-item:hover img{transform:scale(1.05);}
+    .gallery-item-overlay{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.75));padding:32px 14px 12px;color:#fff;}
+    .gallery-item-title{font-weight:700;font-size:14px;margin-bottom:2px;}
+    .gallery-item-cat{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--orange);}
+    .gallery-placeholder{display:flex;align-items:center;justify-content:center;font-size:3.5rem;color:var(--gray-300);height:100%;}
+    .gallery-empty{text-align:center;padding:3rem 1rem;color:var(--gray-400);}
+    /* Lightbox */
+    .lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:1000;align-items:center;justify-content:center;padding:2rem;}
+    .lightbox.open{display:flex;}
+    .lightbox img{max-width:90vw;max-height:80vh;border-radius:8px;}
+    .lightbox-caption{color:#fff;text-align:center;margin-top:1rem;}
+    .lightbox-close{position:absolute;top:24px;right:32px;color:#fff;font-size:2.5rem;cursor:pointer;line-height:1;background:none;border:none;}
+  </style>
+</head>
+<body>
+
+  <!-- ===== NAVBAR ===== -->
+  <nav class="navbar" id="navbar">
+    <div class="navbar-inner">
+      <a href="index.html" class="navbar-brand">
+        <span>AJIGS</span> CONNECT
+        <small>RC 7304230</small>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="services.html">Services</a></li>
+        <li><a href="gallery.html" class="active">Gallery</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+      <div class="nav-actions">
+        <a href="contact.html" class="btn btn-primary btn-sm">Get a Quote</a>
+        <a href="login.html" class="btn btn-outline btn-sm">Staff Login</a>
+      </div>
+      <button class="hamburger" id="hamburger" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+  <div class="mobile-menu" id="mobileMenu">
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="services.html">Services</a></li>
+      <li><a href="gallery.html">Gallery</a></li>
+      <li><a href="about.html">About Us</a></li>
+      <li><a href="contact.html">Contact</a></li>
+      <li><a href="login.html">Staff Login</a></li>
+    </ul>
+  </div>
+
+  <!-- ===== PAGE HERO ===== -->
+  <div class="page-hero">
+    <div class="container">
+      <div class="breadcrumb"><a href="index.html">Home</a><span>/</span>Gallery</div>
+      <h1>OUR <span>GALLERY</span></h1>
+      <p>Real projects and jobs completed by AJIGS CONNECT across Kaduna State</p>
+    </div>
+  </div>
+
+  <!-- ===== GALLERY SECTION ===== -->
+  <section class="section">
+    <div class="container">
+
+      <div class="gallery-filters" id="gallery-filters">
+        <button class="gallery-filter-btn active" data-cat="">All</button>
+        <button class="gallery-filter-btn" data-cat="Construction">Construction</button>
+        <button class="gallery-filter-btn" data-cat="Building Materials Supply">Materials Supply</button>
+        <button class="gallery-filter-btn" data-cat="Automobile Sales">Automobiles</button>
+        <button class="gallery-filter-btn" data-cat="Engineering Projects">Engineering</button>
+        <button class="gallery-filter-btn" data-cat="Cleaning Services">Cleaning</button>
+      </div>
+
+      <div class="gallery-grid" id="gallery-grid">
+        <!-- Loaded dynamically from Supabase -->
+        <div class="gallery-empty" id="gallery-loading">Loading gallery...</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ===== CTA ===== -->
+  <section style="background:var(--black);padding:64px 0;">
+    <div class="container text-center">
+      <h2 class="section-heading" style="color:var(--white);">Like What You <span>See?</span></h2>
+      <p class="section-sub centered" style="color:var(--gray-400);">Get in touch and let's discuss your project.</p>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:2rem;">
+        <a href="tel:08069051403" class="btn btn-primary btn-lg">📞 08069051403</a>
+        <a href="https://wa.me/2348069051403" class="btn btn-wa btn-lg" target="_blank">💬 WhatsApp</a>
+        <a href="contact.html" class="btn btn-outline btn-lg">Contact Form</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <div class="footer-brand"><span>AJIGS</span> CONNECT</div>
+          <div class="footer-tagline">Construction · Materials · Automobiles · Engineering · Cleaning</div>
+          <div class="footer-body">A division of ARI'S JIB GLOBAL SERVICES LIMITED<br>RC Number: 7304230 · Kaduna State, Nigeria</div>
+        </div>
+        <div>
+          <div class="footer-title">Quick Links</div>
+          <ul class="footer-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="services.html">Services</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="footer-title">Services</div>
+          <ul class="footer-links">
+            <li><a href="services.html#construction">Construction</a></li>
+            <li><a href="services.html#materials">Materials Supply</a></li>
+            <li><a href="services.html#automobiles">Automobiles</a></li>
+            <li><a href="services.html#engineering">Engineering</a></li>
+            <li><a href="services.html#cleaning">Cleaning Services</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="footer-title">Contact</div>
+          <div class="footer-body">
+            No. 5 Aliyu Asio Street, New Extension Kawo<br>
+            U/Rimi, Kaduna State<br><br>
+            <a href="tel:08069051403" style="color:var(--orange);">08069051403</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2025 AJIGS CONNECT · RC 7304230. All rights reserved.</span>
+        <a href="login.html">Staff Portal</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- LIGHTBOX -->
+  <div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
+    <button class="lightbox-close" onclick="closeLightbox(event)">×</button>
+    <div>
+      <img id="lightbox-img" src="" alt="">
+      <div class="lightbox-caption" id="lightbox-caption"></div>
+    </div>
+  </div>
+
+  <a href="https://wa.me/2348069051403" class="wa-fab" target="_blank" title="Chat on WhatsApp">💬</a>
+  <script src="js/main.js"></script>
+  <script src="js/gallery.js"></script>
+</body>
+</html>

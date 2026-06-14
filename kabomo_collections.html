@@ -1,0 +1,1488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Kabomo Collections">
+<meta name="theme-color" content="#0a1f44">
+<title>Kabomo Collections</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ── DESIGN TOKENS ── */
+:root {
+  --navy:      #0a1f44;
+  --navy-mid:  #112d5e;
+  --navy-soft: #1a3a72;
+  --blue:      #1d4ed8;
+  --blue-light:#3b82f6;
+  --gold:      #c9a84c;
+  --gold-light:#e8c96d;
+  --white:     #ffffff;
+  --off-white: #f4f7ff;
+  --card-bg:   #ffffff;
+  --border:    rgba(10,31,68,0.10);
+  --muted:     #6b7a99;
+  --text:      #0a1f44;
+  --green:     #15803d;
+  --green-pale:#dcfce7;
+  --red:       #b91c1c;
+  --red-pale:  #fee2e2;
+  --shadow:    0 4px 24px rgba(10,31,68,0.10);
+  --shadow-lg: 0 12px 48px rgba(10,31,68,0.18);
+  --r:         14px;
+  --r-sm:      8px;
+  --font-display: 'Cormorant Garamond', serif;
+  --font-body:    'Outfit', sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:var(--font-body);background:#0a1f44;display:flex;justify-content:center;align-items:center;}
+
+/* ── DEVICE SHELL ── */
+.device{
+  width:min(390px,100vw);
+  height:min(844px,100vh);
+  background:var(--off-white);
+  border-radius:clamp(0px,44px,44px);
+  overflow:hidden;
+  position:relative;
+  box-shadow:0 40px 80px rgba(0,0,0,.5);
+}
+
+/* ── SCREENS ── */
+.screen{position:absolute;inset:0;display:none;flex-direction:column;overflow:hidden;}
+.screen.active{display:flex;}
+
+/* ══════════════════════════════════
+   SPLASH
+══════════════════════════════════ */
+#s-splash{
+  background:var(--navy);
+  align-items:center;
+  justify-content:center;
+  gap:0;
+}
+.splash-glow{
+  position:absolute;
+  width:300px;height:300px;
+  background:radial-gradient(circle, rgba(201,168,76,.15) 0%, transparent 70%);
+  top:50%;left:50%;transform:translate(-50%,-60%);
+}
+.splash-logo-wrap{
+  animation: splashPop .7s .3s both cubic-bezier(.34,1.56,.64,1);
+  position:relative;z-index:2;
+}
+.splash-logo-wrap img{width:160px;height:160px;object-fit:contain;filter:drop-shadow(0 8px 32px rgba(201,168,76,.4));}
+.splash-name{
+  font-family:var(--font-display);
+  font-size:30px;font-weight:700;
+  color:var(--gold);
+  letter-spacing:.12em;
+  margin-top:20px;
+  animation:slideUp .5s .6s both ease;
+  position:relative;z-index:2;
+}
+.splash-slogan{
+  font-size:13px;color:rgba(255,255,255,.5);
+  font-style:italic;margin-top:6px;letter-spacing:.06em;
+  font-family:var(--font-display);
+  animation:slideUp .5s .75s both ease;
+  position:relative;z-index:2;
+}
+.splash-bar{
+  width:48px;height:3px;background:var(--gold);border-radius:2px;
+  margin-top:40px;
+  animation:splashBar 1.6s .9s both ease;
+  position:relative;z-index:2;
+}
+@keyframes splashPop{from{transform:scale(0) rotate(-10deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes splashBar{0%{width:0;opacity:0}100%{width:48px;opacity:1}}
+
+/* ══════════════════════════════════
+   SETUP SCREEN (First launch)
+══════════════════════════════════ */
+.auth-wrap{flex:1;overflow-y:auto;padding-bottom:20px;}
+.auth-head{
+  background:linear-gradient(160deg, var(--navy) 0%, var(--navy-soft) 100%);
+  padding:52px 24px 40px;
+  text-align:center;
+  position:relative;overflow:hidden;
+}
+.auth-head::after{
+  content:'';position:absolute;bottom:-24px;left:0;right:0;
+  height:50px;background:var(--off-white);border-radius:50% 50% 0 0 / 100% 100% 0 0;
+}
+.auth-head-logo img{width:72px;height:72px;object-fit:contain;filter:drop-shadow(0 4px 12px rgba(201,168,76,.3));}
+.auth-head-name{font-family:var(--font-display);font-size:20px;font-weight:700;color:var(--gold);margin-top:10px;letter-spacing:.08em;}
+.auth-head-slogan{font-size:12px;color:rgba(255,255,255,.45);font-style:italic;font-family:var(--font-display);margin-top:4px;}
+.auth-body{padding:44px 24px 24px;}
+.auth-title{font-family:var(--font-display);font-size:26px;font-weight:700;color:var(--navy);margin-bottom:4px;}
+.auth-sub{font-size:13px;color:var(--muted);margin-bottom:28px;}
+.field{margin-bottom:16px;}
+.field label{font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:6px;}
+.field input,.field select,.field textarea{
+  width:100%;padding:13px 14px;
+  border:1.5px solid var(--border);border-radius:var(--r-sm);
+  font-size:14px;font-family:var(--font-body);
+  background:var(--white);color:var(--text);outline:none;
+  transition:border-color .15s,box-shadow .15s;
+}
+.field input:focus,.field select:focus,.field textarea:focus{
+  border-color:var(--blue);
+  box-shadow:0 0 0 3px rgba(29,78,216,.08);
+}
+.field textarea{resize:none;height:72px;}
+.btn-primary{
+  width:100%;padding:14px;
+  background:linear-gradient(135deg, var(--navy) 0%, var(--navy-soft) 100%);
+  color:var(--white);border:none;border-radius:var(--r-sm);
+  font-size:15px;font-weight:600;font-family:var(--font-body);
+  cursor:pointer;transition:opacity .15s;margin-top:8px;
+  box-shadow:0 4px 16px rgba(10,31,68,.25);
+}
+.btn-primary:active{opacity:.85;}
+.btn-ghost{
+  width:100%;padding:13px;
+  background:transparent;color:var(--navy);
+  border:1.5px solid var(--border);border-radius:var(--r-sm);
+  font-size:14px;font-weight:500;font-family:var(--font-body);
+  cursor:pointer;margin-top:10px;
+}
+.auth-link{text-align:center;font-size:13px;color:var(--muted);margin-top:18px;}
+.auth-link a{color:var(--blue);font-weight:600;cursor:pointer;text-decoration:none;}
+.err-box{
+  background:var(--red-pale);color:var(--red);
+  border-radius:var(--r-sm);padding:10px 14px;
+  font-size:13px;margin-bottom:14px;display:none;
+}
+.ok-box{
+  background:var(--green-pale);color:var(--green);
+  border-radius:var(--r-sm);padding:10px 14px;
+  font-size:13px;margin-bottom:14px;display:none;
+}
+.divider{display:flex;align-items:center;gap:12px;margin:18px 0;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
+.divider span{font-size:12px;color:var(--muted);}
+
+/* Biometric button */
+.bio-btn{
+  width:100%;padding:14px;margin-top:10px;
+  background:var(--gold);color:var(--navy);
+  border:none;border-radius:var(--r-sm);
+  font-size:15px;font-weight:700;font-family:var(--font-body);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;
+  box-shadow:0 4px 16px rgba(201,168,76,.35);
+  transition:opacity .15s;
+}
+.bio-btn:active{opacity:.85;}
+.bio-icon{font-size:22px;}
+
+/* ══════════════════════════════════
+   MAIN APP
+══════════════════════════════════ */
+#s-app{background:var(--off-white);}
+.app-header{
+  background:linear-gradient(135deg, var(--navy) 0%, var(--navy-soft) 100%);
+  padding:44px 16px 14px;
+  display:flex;align-items:center;gap:10px;
+  flex-shrink:0;
+}
+.header-logo img{width:38px;height:38px;object-fit:contain;border-radius:50%;background:rgba(255,255,255,.08);padding:4px;}
+.header-text{flex:1;}
+.header-name{font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--gold);letter-spacing:.06em;}
+.header-sub{font-size:11px;color:rgba(255,255,255,.45);margin-top:1px;}
+.header-capital{font-size:12px;color:rgba(255,255,255,.8);background:rgba(255,255,255,.12);padding:5px 10px;border-radius:20px;white-space:nowrap;}
+
+.app-body{flex:1;overflow:hidden;display:flex;flex-direction:column;}
+.tab-pane{display:none;flex:1;overflow-y:auto;padding-bottom:80px;}
+.tab-pane.active{display:block;}
+
+/* Bottom Nav */
+.bottom-nav{
+  display:flex;background:var(--white);
+  border-top:1px solid var(--border);
+  position:absolute;bottom:0;left:0;right:0;
+  box-shadow:0 -4px 20px rgba(10,31,68,.06);
+  z-index:20;
+}
+.nav-btn{
+  flex:1;display:flex;flex-direction:column;align-items:center;
+  gap:3px;padding:10px 4px 14px;
+  background:none;border:none;cursor:pointer;
+  position:relative;
+}
+.nav-btn svg{width:20px;height:20px;stroke:var(--muted);fill:none;stroke-width:1.8;transition:stroke .15s;}
+.nav-btn span{font-size:10px;color:var(--muted);font-family:var(--font-body);transition:color .15s;}
+.nav-btn.active svg{stroke:var(--blue);}
+.nav-btn.active span{color:var(--blue);font-weight:600;}
+.nav-badge{
+  position:absolute;top:6px;right:calc(50% - 18px);
+  background:var(--red);color:#fff;
+  font-size:9px;font-weight:700;
+  width:16px;height:16px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+}
+
+/* ── STAT CARDS ── */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px 14px 6px;}
+.stat-card{
+  background:var(--white);border-radius:var(--r);
+  padding:14px;border:1px solid var(--border);
+  box-shadow:var(--shadow);
+}
+.stat-lbl{font-size:11px;color:var(--muted);font-weight:500;}
+.stat-val{font-size:20px;font-weight:600;color:var(--text);margin-top:4px;font-family:var(--font-display);}
+.stat-val.profit{color:var(--green);}
+
+/* Section headers */
+.sec-hd{
+  font-size:11px;font-weight:600;color:var(--muted);
+  letter-spacing:.06em;text-transform:uppercase;
+  padding:12px 14px 6px;
+}
+
+/* Chat feed */
+.chat-feed{padding:0 14px;display:flex;flex-direction:column;gap:8px;}
+.chat-msg{
+  border-radius:4px 12px 12px 12px;
+  padding:10px 13px;font-size:13px;line-height:1.55;
+  max-width:92%;animation:msgIn .25s ease;
+}
+@keyframes msgIn{from{transform:translateY(8px);opacity:0}to{transform:translateY(0);opacity:1}}
+.chat-msg.welcome{background:var(--white);color:var(--text);border:1px solid var(--border);}
+.chat-msg.sale{background:var(--green-pale);color:#14532d;}
+.chat-msg.purchase{background:#dbeafe;color:#1e3a8a;}
+.chat-time{font-size:10px;opacity:.55;margin-top:3px;}
+
+.daily-btn{
+  margin:10px 14px;
+  background:linear-gradient(135deg,rgba(201,168,76,.12),rgba(201,168,76,.06));
+  border:1px solid rgba(201,168,76,.4);
+  color:#7a5c00;border-radius:var(--r-sm);
+  padding:12px 16px;font-size:13px;font-weight:600;
+  font-family:var(--font-body);cursor:pointer;
+  display:flex;align-items:center;gap:8px;
+}
+
+/* ── CATALOG ── */
+.cat-toolbar{display:flex;align-items:center;gap:8px;padding:12px 14px 0;}
+.search-box{
+  flex:1;display:flex;align-items:center;gap:8px;
+  background:var(--white);border:1.5px solid var(--border);
+  border-radius:var(--r-sm);padding:9px 12px;
+}
+.search-box input{border:none;background:none;font-size:13px;color:var(--text);outline:none;width:100%;font-family:var(--font-body);}
+.search-box svg{width:16px;height:16px;stroke:var(--muted);flex-shrink:0;}
+.add-item-btn{
+  background:var(--navy);color:#fff;
+  border:none;border-radius:var(--r-sm);
+  padding:10px 14px;font-size:13px;font-weight:600;
+  font-family:var(--font-body);cursor:pointer;
+  display:flex;align-items:center;gap:6px;white-space:nowrap;
+}
+.catalog-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px 14px;}
+.cat-card{
+  background:var(--white);border-radius:var(--r);
+  border:1px solid var(--border);overflow:hidden;
+  box-shadow:var(--shadow);cursor:pointer;
+  transition:transform .15s,box-shadow .15s;
+}
+.cat-card:active{transform:scale(.97);}
+.cat-img{
+  height:100px;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,#e8f0fe,#c7d9ff);
+  font-size:42px;position:relative;overflow:hidden;
+}
+.cat-img img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;}
+.cat-img-emoji{position:relative;z-index:1;font-size:42px;}
+.low-badge{
+  position:absolute;top:6px;right:6px;
+  background:var(--red);color:#fff;
+  font-size:9px;font-weight:700;border-radius:20px;padding:2px 7px;z-index:2;
+}
+.out-badge{
+  position:absolute;top:6px;right:6px;
+  background:#374151;color:#fff;
+  font-size:9px;font-weight:700;border-radius:20px;padding:2px 7px;z-index:2;
+}
+.cat-body{padding:10px;}
+.cat-name{font-size:12px;font-weight:600;color:var(--text);margin-bottom:3px;line-height:1.3;}
+.cat-desc{font-size:11px;color:var(--muted);margin-bottom:6px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.cat-price{font-size:15px;font-weight:700;color:var(--navy);font-family:var(--font-display);}
+.cat-meta{display:flex;justify-content:space-between;align-items:center;margin-top:4px;}
+.cat-margin{font-size:10px;background:var(--green-pale);color:var(--green);border-radius:4px;padding:2px 6px;font-weight:600;}
+.cat-stock{font-size:10px;color:var(--muted);}
+.cat-actions{display:flex;gap:6px;margin-top:8px;}
+.cat-edit-btn,.cat-del-btn{
+  flex:1;padding:6px;border-radius:var(--r-sm);
+  font-size:11px;font-weight:600;font-family:var(--font-body);
+  cursor:pointer;border:1px solid var(--border);
+}
+.cat-edit-btn{background:var(--off-white);color:var(--navy);}
+.cat-del-btn{background:var(--red-pale);color:var(--red);border-color:transparent;}
+
+/* ── SELL FORM ── */
+.form-section{padding:14px;}
+.form-card{background:var(--white);border-radius:var(--r);border:1px solid var(--border);padding:16px;margin-bottom:12px;box-shadow:var(--shadow);}
+.form-card-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:14px;font-family:var(--font-display);}
+.frow{display:flex;align-items:center;margin-bottom:12px;}
+.frow label{font-size:12px;color:var(--muted);width:100px;flex-shrink:0;font-weight:500;}
+.frow select,.frow input{
+  flex:1;border:1.5px solid var(--border);border-radius:var(--r-sm);
+  padding:9px 10px;font-size:13px;font-family:var(--font-body);
+  background:var(--off-white);color:var(--text);outline:none;
+  transition:border-color .15s;
+}
+.frow select:focus,.frow input:focus{border-color:var(--blue);}
+.preview-card{background:linear-gradient(135deg,var(--navy),var(--navy-soft));border-radius:var(--r);padding:16px;margin-bottom:12px;}
+.preview-row{display:flex;justify-content:space-between;padding:4px 0;font-size:13px;}
+.preview-row .pl{color:rgba(255,255,255,.55);}
+.preview-row .pv{font-weight:600;color:#fff;}
+.preview-row .pv.profit{color:var(--gold-light);}
+.confirm-btn{
+  width:100%;background:linear-gradient(135deg,var(--navy),var(--navy-soft));
+  color:#fff;border:none;border-radius:var(--r-sm);
+  padding:14px;font-size:15px;font-weight:600;font-family:var(--font-body);
+  cursor:pointer;box-shadow:0 4px 16px rgba(10,31,68,.25);
+}
+
+/* ── BUY FORM ── */
+.img-upload-area{
+  border:2px dashed var(--border);border-radius:var(--r-sm);
+  padding:20px;text-align:center;cursor:pointer;
+  background:var(--off-white);transition:border-color .15s;
+  margin-bottom:12px;
+}
+.img-upload-area:hover{border-color:var(--blue);}
+.img-upload-area img{max-height:80px;border-radius:6px;margin-top:8px;}
+.img-upload-area p{font-size:13px;color:var(--muted);}
+.img-upload-area span{font-size:11px;color:var(--blue);font-weight:600;}
+
+/* ── HISTORY ── */
+.hist-list{padding:14px;display:flex;flex-direction:column;gap:8px;}
+.hist-item{
+  background:var(--white);border-radius:var(--r);
+  border:1px solid var(--border);padding:12px 14px;
+  display:flex;align-items:center;gap:12px;
+  box-shadow:var(--shadow);
+}
+.hist-emoji{
+  width:40px;height:40px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;flex-shrink:0;
+}
+.hist-emoji.sale{background:var(--green-pale);}
+.hist-emoji.purchase{background:#dbeafe;}
+.hist-info{flex:1;}
+.hist-name{font-size:13px;font-weight:600;color:var(--text);}
+.hist-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+.hist-right{text-align:right;}
+.hist-amt{font-size:14px;font-weight:700;font-family:var(--font-display);}
+.hist-amt.sale{color:var(--green);}
+.hist-amt.purchase{color:var(--red);}
+.hist-time{font-size:10px;color:var(--muted);margin-top:2px;}
+
+/* ══════════════════════════════════
+   MODALS
+══════════════════════════════════ */
+.modal-overlay{
+  display:none;position:absolute;inset:0;
+  background:rgba(10,31,68,.6);z-index:200;
+  align-items:flex-end;justify-content:center;
+  backdrop-filter:blur(2px);
+}
+.modal-overlay.show{display:flex;}
+.modal-sheet{
+  background:var(--white);border-radius:20px 20px 0 0;
+  padding:20px;width:100%;
+  max-height:90%;overflow-y:auto;
+  animation:sheetUp .25s ease;
+}
+@keyframes sheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 16px;}
+.modal-title{font-family:var(--font-display);font-size:20px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.modal-close{float:right;background:none;border:none;font-size:20px;color:var(--muted);cursor:pointer;line-height:1;}
+
+/* Receipt */
+.receipt-logo-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.receipt-logo img{width:44px;height:44px;object-fit:contain;}
+.receipt-biz-name{font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--navy);}
+.receipt-slogan{font-size:11px;color:var(--muted);font-style:italic;font-family:var(--font-display);}
+.receipt-address{font-size:11px;color:var(--muted);margin-top:8px;line-height:1.6;padding-bottom:10px;border-bottom:1px dashed var(--border);}
+.r-row{display:flex;justify-content:space-between;font-size:13px;padding:4px 0;color:var(--text);}
+.r-row.muted{color:var(--muted);font-size:12px;}
+.r-row.total{font-weight:700;font-size:15px;border-top:1px solid var(--border);padding-top:8px;margin-top:6px;}
+.r-profit-banner{background:var(--green-pale);color:var(--green);border-radius:8px;padding:10px 14px;text-align:center;margin-top:12px;font-size:13px;font-weight:600;}
+.r-actions{display:flex;gap:8px;margin-top:14px;}
+.r-actions button{flex:1;padding:11px 4px;border-radius:var(--r-sm);font-size:12px;font-weight:600;font-family:var(--font-body);cursor:pointer;border:1.5px solid var(--border);background:var(--off-white);color:var(--text);}
+.r-actions .wa{background:#25D366;color:#fff;border-color:#25D366;}
+
+/* Daily Report */
+.report-stat{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border);}
+.report-stat:last-of-type{border-bottom:none;}
+.rs-lbl{font-size:13px;color:var(--muted);}
+.rs-val{font-size:18px;font-weight:700;color:var(--text);font-family:var(--font-display);}
+.rs-val.green{color:var(--green);}
+
+/* Add/Edit Item form in modal */
+.modal-sheet .field input,.modal-sheet .field select,.modal-sheet .field textarea{background:var(--off-white);}
+
+/* Loading overlay */
+.loading-overlay{
+  display:none;position:absolute;inset:0;
+  background:rgba(10,31,68,.7);z-index:500;
+  align-items:center;justify-content:center;
+  flex-direction:column;gap:16px;
+}
+.loading-overlay.show{display:flex;}
+.spinner{
+  width:40px;height:40px;border-radius:50%;
+  border:3px solid rgba(201,168,76,.2);
+  border-top-color:var(--gold);
+  animation:spin .8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:14px;color:rgba(255,255,255,.7);}
+
+/* Toast */
+.toast{
+  position:absolute;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:var(--navy);color:#fff;
+  border-radius:20px;padding:10px 20px;
+  font-size:13px;font-weight:500;
+  opacity:0;transition:all .3s;
+  white-space:nowrap;z-index:300;pointer-events:none;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+<div class="device">
+
+<!-- ── LOADING OVERLAY ── -->
+<div class="loading-overlay" id="loading">
+  <div class="spinner"></div>
+  <div class="loading-text" id="loading-text">Loading...</div>
+</div>
+
+<!-- ── TOAST ── -->
+<div class="toast" id="toast"></div>
+
+<!-- ════════════════════════════════
+  SPLASH SCREEN
+════════════════════════════════ -->
+<div class="screen active" id="s-splash">
+  <div class="splash-glow"></div>
+  <div class="splash-logo-wrap">
+    <img id="splash-img" src="" alt="Kabomo Collections Logo">
+  </div>
+  <div class="splash-name">KABOMO COLLECTIONS</div>
+  <div class="splash-slogan">Wear Love, Wear Luxury</div>
+  <div class="splash-bar"></div>
+</div>
+
+<!-- ════════════════════════════════
+  SETUP SCREEN (first launch)
+════════════════════════════════ -->
+<div class="screen" id="s-setup">
+  <div class="auth-wrap">
+    <div class="auth-head">
+      <div class="auth-head-logo"><img id="setup-img" src="" alt="Logo"></div>
+      <div class="auth-head-name">KABOMO COLLECTIONS</div>
+      <div class="auth-head-slogan">Wear Love, Wear Luxury</div>
+    </div>
+    <div class="auth-body">
+      <div class="auth-title">Create account</div>
+      <div class="auth-sub">Set up your store — takes 1 minute</div>
+      <div class="err-box" id="setup-err"></div>
+      <div class="field"><label>Your Name</label><input type="text" id="su-name" placeholder="e.g. Khadija Umar"></div>
+      <div class="field"><label>Email Address</label><input type="email" id="su-email" placeholder="your@email.com"></div>
+      <div class="field"><label>Password</label><input type="password" id="su-pass" placeholder="Create a strong password"></div>
+      <div class="field"><label>Confirm Password</label><input type="password" id="su-pass2" placeholder="Repeat password"></div>
+      <div class="field">
+        <label>Security Question</label>
+        <select id="su-sq">
+          <option value="">— Choose a question —</option>
+          <option>What is your mother's maiden name?</option>
+          <option>What was the name of your first pet?</option>
+          <option>What city were you born in?</option>
+          <option>What was the name of your primary school?</option>
+          <option>What is your favourite food?</option>
+        </select>
+      </div>
+      <div class="field"><label>Your Answer</label><input type="text" id="su-sa" placeholder="Your answer (keep it secret)"></div>
+      <div class="field"><label>Starting Capital (₦)</label><input type="number" id="su-cap" placeholder="e.g. 100000"></div>
+      <button class="btn-primary" onclick="doSetup()">Create my store →</button>
+      <div class="auth-link">Already have an account? <a onclick="showScreen('s-login')">Sign in</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════
+  LOGIN SCREEN
+════════════════════════════════ -->
+<div class="screen" id="s-login">
+  <div class="auth-wrap">
+    <div class="auth-head">
+      <div class="auth-head-logo"><img id="login-img" src="" alt="Logo"></div>
+      <div class="auth-head-name">KABOMO COLLECTIONS</div>
+      <div class="auth-head-slogan">Wear Love, Wear Luxury</div>
+    </div>
+    <div class="auth-body">
+      <div class="auth-title">Welcome back</div>
+      <div class="auth-sub">Sign in to your store</div>
+      <div class="err-box" id="login-err"></div>
+      <div class="field"><label>Email</label><input type="email" id="li-email" placeholder="your@email.com"></div>
+      <div class="field"><label>Password</label><input type="password" id="li-pass" placeholder="••••••••"></div>
+      <button class="btn-primary" onclick="doLogin()">Sign in</button>
+      <div class="divider"><span>or</span></div>
+      <button class="bio-btn" id="bio-btn" onclick="doBiometric()">
+        <span class="bio-icon">🔐</span> Use Fingerprint / Face ID
+      </button>
+      <div class="auth-link" style="margin-top:16px"><a onclick="showScreen('s-forgot')">Forgot password?</a></div>
+      <div class="auth-link" style="margin-top:8px">New here? <a onclick="showScreen('s-setup')">Create account</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════
+  FORGOT PASSWORD
+════════════════════════════════ -->
+<div class="screen" id="s-forgot">
+  <div class="auth-wrap">
+    <div class="auth-head">
+      <div class="auth-head-logo"><img id="forgot-img" src="" alt="Logo"></div>
+      <div class="auth-head-name">KABOMO COLLECTIONS</div>
+      <div class="auth-head-slogan">Wear Love, Wear Luxury</div>
+    </div>
+    <div class="auth-body">
+      <div class="auth-title">Reset password</div>
+      <div class="auth-sub">Answer your security question</div>
+      <div class="err-box" id="forgot-err"></div>
+      <div class="ok-box" id="forgot-ok"></div>
+      <div id="forgot-step1">
+        <div class="field"><label>Email Address</label><input type="email" id="fp-email" placeholder="your@email.com"></div>
+        <button class="btn-primary" onclick="forgotStep1()">Find my account →</button>
+      </div>
+      <div id="forgot-step2" style="display:none">
+        <div style="background:var(--off-white);border-radius:var(--r-sm);padding:12px 14px;margin-bottom:16px;font-size:13px;color:var(--text);" id="sq-display"></div>
+        <div class="field"><label>Your Answer</label><input type="text" id="fp-ans" placeholder="Your answer"></div>
+        <div class="field"><label>New Password</label><input type="password" id="fp-newpass" placeholder="New password"></div>
+        <button class="btn-primary" onclick="forgotStep2()">Reset password →</button>
+      </div>
+      <div class="auth-link" style="margin-top:16px"><a onclick="showScreen('s-login')">← Back to sign in</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════
+  MAIN APP
+════════════════════════════════ -->
+<div class="screen" id="s-app">
+  <div class="app-header">
+    <div class="header-logo"><img id="app-logo-img" src="" alt="Logo"></div>
+    <div class="header-text">
+      <div class="header-name">KABOMO COLLECTIONS</div>
+      <div class="header-sub">Wear Love, Wear Luxury</div>
+    </div>
+    <div class="header-capital">₦<span id="cap-hd">0</span></div>
+  </div>
+
+  <div class="app-body">
+    <!-- HOME -->
+    <div class="tab-pane active" id="tp-home">
+      <div class="stat-grid">
+        <div class="stat-card"><div class="stat-lbl">Today's Sales</div><div class="stat-val" id="st-sales">₦0</div></div>
+        <div class="stat-card"><div class="stat-lbl">Today's Profit</div><div class="stat-val profit" id="st-profit">₦0</div></div>
+        <div class="stat-card"><div class="stat-lbl">Capital Left</div><div class="stat-val" id="st-capital">₦0</div></div>
+        <div class="stat-card"><div class="stat-lbl">Items in Stock</div><div class="stat-val" id="st-stock">0</div></div>
+      </div>
+      <button class="daily-btn" onclick="showDailyReport()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 12h8M8 8h8M8 16h4"/></svg>
+        View daily closing report
+      </button>
+      <div class="sec-hd">Activity Feed</div>
+      <div class="chat-feed" id="chat-feed">
+        <div class="chat-msg welcome">Welcome to Kabomo Collections! Record a sale or add new stock to get started. 💎</div>
+      </div>
+    </div>
+
+    <!-- CATALOG -->
+    <div class="tab-pane" id="tp-catalog">
+      <div class="cat-toolbar">
+        <div class="search-box">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="cat-search" placeholder="Search items…" oninput="filterCatalog()">
+        </div>
+        <button class="add-item-btn" onclick="openAddItem()">+ Add</button>
+      </div>
+      <div class="catalog-grid" id="catalog-grid">
+        <div style="grid-column:1/-1;text-align:center;padding:40px;font-size:13px;color:var(--muted)">No items yet. Tap + Add to get started.</div>
+      </div>
+    </div>
+
+    <!-- SELL -->
+    <div class="tab-pane" id="tp-sell">
+      <div class="form-section">
+        <div class="form-card">
+          <div class="form-card-title">Record a Sale</div>
+          <div class="frow"><label>Item</label><select id="sell-item" onchange="onSellItemChange()"><option value="">— select —</option></select></div>
+          <div class="frow"><label>Qty</label><input type="number" id="sell-qty" value="1" min="1" oninput="updateSellPreview()"></div>
+          <div class="frow"><label>Sell Price (₦)</label><input type="number" id="sell-price" placeholder="Enter price" oninput="updateSellPreview()"></div>
+          <div class="frow"><label>Customer</label><input type="text" id="sell-cust" placeholder="Optional name"></div>
+          <div class="frow"><label>Payment</label>
+            <select id="sell-pay">
+              <option>Cash</option><option>Bank Transfer</option>
+              <option>Opay / Palmpay</option><option>POS Card</option>
+            </select>
+          </div>
+        </div>
+        <div class="preview-card">
+          <div class="preview-row"><span class="pl">Total Amount</span><span class="pv" id="pv-total">₦0</span></div>
+          <div class="preview-row"><span class="pl">Your Profit</span><span class="pv profit" id="pv-profit">₦0</span></div>
+        </div>
+        <button class="confirm-btn" onclick="confirmSale()">Confirm Sale &amp; Generate Invoice</button>
+      </div>
+    </div>
+
+    <!-- BUY STOCK -->
+    <div class="tab-pane" id="tp-buy">
+      <div class="form-section">
+        <div class="form-card">
+          <div class="form-card-title">Record Purchase from Kano</div>
+          <div class="frow"><label>Item Name</label><input type="text" id="buy-name" placeholder="e.g. Gold ring 18K"></div>
+          <div class="frow"><label>Type</label>
+            <select id="buy-emoji">
+              <option value="💍">💍 Ring</option><option value="📿">📿 Necklace</option>
+              <option value="✨">✨ Earrings</option><option value="⌚">⌚ Bracelet</option>
+              <option value="🪬">🪬 Bangle</option><option value="💎">💎 Other</option>
+            </select>
+          </div>
+          <div class="frow"><label>Description</label><input type="text" id="buy-desc" placeholder="Short description"></div>
+          <div class="frow"><label>Cost Price (₦)</label><input type="number" id="buy-cost" placeholder="What you paid per item"></div>
+          <div class="frow"><label>Selling Price (₦)</label><input type="number" id="buy-sell" placeholder="Your selling price"></div>
+          <div class="frow"><label>Qty Bought</label><input type="number" id="buy-qty" value="1" min="1"></div>
+          <div style="margin-top:8px">
+            <div class="img-upload-area" onclick="document.getElementById('buy-img-input').click()" id="buy-img-area">
+              <p>📷 Tap to add item photo</p>
+              <span>Upload from gallery or take a photo</span>
+              <img id="buy-img-preview" src="" style="display:none;max-height:80px;border-radius:6px;margin-top:8px;">
+            </div>
+            <input type="file" id="buy-img-input" accept="image/*" style="display:none" onchange="previewBuyImg(this)">
+          </div>
+        </div>
+        <button class="confirm-btn" onclick="confirmPurchase()">Add to Stock &amp; Generate Receipt</button>
+      </div>
+    </div>
+
+    <!-- HISTORY -->
+    <div class="tab-pane" id="tp-history">
+      <div class="hist-list" id="hist-list">
+        <div style="text-align:center;padding:40px;font-size:13px;color:var(--muted)">No transactions yet.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div class="bottom-nav">
+    <button class="nav-btn active" onclick="switchTab('home',this)">
+      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+      <span>Home</span>
+    </button>
+    <button class="nav-btn" onclick="switchTab('catalog',this)" id="nav-catalog">
+      <svg viewBox="0 0 24 24"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>
+      <span>Catalog</span>
+    </button>
+    <button class="nav-btn" onclick="switchTab('sell',this)">
+      <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 001.99 1.61h9.72a2 2 0 001.99-1.61L23 6H6"/></svg>
+      <span>Sell</span>
+    </button>
+    <button class="nav-btn" onclick="switchTab('buy',this)">
+      <svg viewBox="0 0 24 24"><path d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><path d="M10 12h4"/></svg>
+      <span>Buy</span>
+    </button>
+    <button class="nav-btn" onclick="switchTab('history',this)">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      <span>History</span>
+    </button>
+  </div>
+</div>
+
+<!-- ════════════════════════════
+  MODALS
+════════════════════════════ -->
+
+<!-- Receipt Modal -->
+<div class="modal-overlay" id="m-receipt" onclick="closeModal('m-receipt',event)">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <button class="modal-close" onclick="closeModal('m-receipt')">✕</button>
+    <div class="receipt-logo-row">
+      <img id="r-logo" src="" style="width:44px;height:44px;object-fit:contain;">
+      <div>
+        <div class="receipt-biz-name">KABOMO COLLECTIONS</div>
+        <div class="receipt-slogan">Wear Love, Wear Luxury</div>
+      </div>
+    </div>
+    <div class="receipt-address">
+      Ahmad M Daku Road, Fatima Shema Housing Estate<br>
+      Katsina State, Nigeria<br>
+      📞 09038645877
+    </div>
+    <div id="receipt-body"></div>
+    <div class="r-actions">
+      <button onclick="printReceipt()">🖨 Print</button>
+      <button class="wa" onclick="sendWhatsApp()">WhatsApp</button>
+      <button onclick="saveReceipt()">💾 Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Daily Report Modal -->
+<div class="modal-overlay" id="m-report" onclick="closeModal('m-report',event)">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <button class="modal-close" onclick="closeModal('m-report')">✕</button>
+    <div class="modal-title">Daily Report</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:20px;" id="report-date"></div>
+    <div id="report-body"></div>
+    <button class="btn-primary" style="margin-top:16px" onclick="closeModal('m-report')">Close</button>
+  </div>
+</div>
+
+<!-- Add/Edit Item Modal -->
+<div class="modal-overlay" id="m-item" onclick="closeModal('m-item',event)">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <button class="modal-close" onclick="closeModal('m-item')">✕</button>
+    <div class="modal-title" id="item-modal-title">Add New Item</div>
+    <div style="height:12px"></div>
+    <input type="hidden" id="edit-item-id">
+    <div class="field"><label>Item Name</label><input type="text" id="ei-name" placeholder="e.g. Gold Ring 18K"></div>
+    <div class="field"><label>Type / Icon</label>
+      <select id="ei-emoji">
+        <option value="💍">💍 Ring</option><option value="📿">📿 Necklace</option>
+        <option value="✨">✨ Earrings</option><option value="⌚">⌚ Bracelet</option>
+        <option value="🪬">🪬 Bangle</option><option value="💎">💎 Other</option>
+      </select>
+    </div>
+    <div class="field"><label>Short Description</label><textarea id="ei-desc" placeholder="e.g. 18K gold finish, adjustable size, elegant design"></textarea></div>
+    <div class="field"><label>Cost Price (₦)</label><input type="number" id="ei-cost" placeholder="What you paid in Kano"></div>
+    <div class="field"><label>Selling Price (₦)</label><input type="number" id="ei-sell" placeholder="Your selling price"></div>
+    <div class="field"><label>Quantity in Stock</label><input type="number" id="ei-qty" value="1" min="0"></div>
+    <div class="img-upload-area" onclick="document.getElementById('ei-img-input').click()" id="ei-img-area">
+      <p>📷 Tap to add / change photo</p>
+      <span>Upload from gallery or take a photo</span>
+      <img id="ei-img-preview" src="" style="display:none;max-height:80px;border-radius:6px;margin-top:8px;display:block;">
+    </div>
+    <input type="file" id="ei-img-input" accept="image/*" style="display:none" onchange="previewEditImg(this)">
+    <div style="height:8px"></div>
+    <button class="btn-primary" onclick="saveItem()">Save Item</button>
+  </div>
+</div>
+
+</div><!-- end .device -->
+
+<script>
+// ═══════════════════════════════════════
+// SUPABASE CONFIG
+// ═══════════════════════════════════════
+const SB_URL  = 'https://pelkootzjmcppuljgbqs.supabase.co';
+const SB_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBlbGtvb3R6am1jcHB1bGpnYnFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk4MDY3NDEsImV4cCI6MjA5NTM4Mjc0MX0.rjuqM25Tx0pQNm-vZ9VdxkePimuUqYapU9bwmUhx2fw';
+const STORAGE = 'kabomo-items';
+
+const LOGO_B64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==";
+
+// Set logo everywhere
+function setLogos(){
+  const src = localStorage.getItem('kc_logo') || LOGO_B64;
+  ['splash-img','setup-img','login-img','forgot-img','app-logo-img','r-logo'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.src=src;
+  });
+}
+
+// ═══════════════════════════════════════
+// SUPABASE HELPERS
+// ═══════════════════════════════════════
+async function sbFetch(path, opts={}){
+  const res = await fetch(SB_URL+'/rest/v1/'+path, {
+    ...opts,
+    headers:{
+      'apikey': SB_KEY,
+      'Authorization': 'Bearer '+SB_KEY,
+      'Content-Type': 'application/json',
+      'Prefer': opts.prefer || 'return=representation',
+      ...(opts.headers||{})
+    }
+  });
+  if(!res.ok && res.status!==204){
+    const err = await res.json().catch(()=>({}));
+    throw new Error(err.message||'Request failed: '+res.status);
+  }
+  if(res.status===204) return null;
+  return res.json().catch(()=>null);
+}
+
+const db = {
+  async getUser(email){ return sbFetch('kc_users?email=eq.'+encodeURIComponent(email)+'&limit=1'); },
+  async createUser(u){ return sbFetch('kc_users',{method:'POST',body:JSON.stringify(u)}); },
+  async updateUser(id,u){ return sbFetch('kc_users?id=eq.'+id,{method:'PATCH',body:JSON.stringify(u),prefer:'return=minimal'}); },
+  async getCatalog(uid){ return sbFetch('kc_catalog?user_id=eq.'+uid+'&order=created_at.desc'); },
+  async upsertItem(item){ return sbFetch('kc_catalog',{method:'POST',body:JSON.stringify(item),prefer:'resolution=merge-duplicates,return=representation',headers:{'Prefer':'resolution=merge-duplicates,return=representation'}}); },
+  async updateItem(id,data){ return sbFetch('kc_catalog?id=eq.'+id,{method:'PATCH',body:JSON.stringify(data),prefer:'return=minimal'}); },
+  async deleteItem(id){ return sbFetch('kc_catalog?id=eq.'+id,{method:'DELETE',prefer:'return=minimal'}); },
+  async getTransactions(uid,limit=50){ return sbFetch('kc_transactions?user_id=eq.'+uid+'&order=created_at.desc&limit='+limit); },
+  async addTransaction(t){ return sbFetch('kc_transactions',{method:'POST',body:JSON.stringify(t)}); },
+  async getTodayStats(uid){
+    const today = new Date().toISOString().split('T')[0];
+    return sbFetch('kc_transactions?user_id=eq.'+uid+'&created_at=gte.'+today+'T00:00:00&type=eq.sale');
+  }
+};
+
+// ═══════════════════════════════════════
+// IMAGE UPLOAD TO SUPABASE STORAGE
+// ═══════════════════════════════════════
+async function uploadImage(file){
+  const ext = file.name.split('.').pop();
+  const fname = Date.now()+'.'+ext;
+  const res = await fetch(SB_URL+'/storage/v1/object/'+STORAGE+'/'+fname,{
+    method:'POST',
+    headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':file.type},
+    body: file
+  });
+  if(!res.ok) return null;
+  return SB_URL+'/storage/v1/object/public/'+STORAGE+'/'+fname;
+}
+
+// ═══════════════════════════════════════
+// APP STATE
+// ═══════════════════════════════════════
+let APP = {
+  user: null,
+  catalog: [],
+  todaySales: 0,
+  todayProfit: 0,
+  editingItemId: null,
+  editImgFile: null,
+  buyImgFile: null,
+  lastReceipt: null
+};
+
+// ═══════════════════════════════════════
+// UTILITIES
+// ═══════════════════════════════════════
+const fmt = n => '₦'+Math.round(n||0).toLocaleString();
+const nowStr = ()=>{
+  const d=new Date();
+  return d.toLocaleDateString('en-NG',{day:'numeric',month:'short',year:'numeric'})+' · '+
+         d.toLocaleTimeString('en-NG',{hour:'2-digit',minute:'2-digit'});
+};
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function showLoading(msg='Loading...'){
+  document.getElementById('loading-text').textContent=msg;
+  document.getElementById('loading').classList.add('show');
+}
+function hideLoading(){ document.getElementById('loading').classList.remove('show'); }
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+function showErr(id,msg){ const el=document.getElementById(id); el.textContent=msg; el.style.display='block'; }
+function hideErr(id){ document.getElementById(id).style.display='none'; }
+function closeModal(id,e){
+  if(e && e.target!==document.getElementById(id)) return;
+  document.getElementById(id).classList.remove('show');
+}
+function openModal(id){ document.getElementById(id).classList.add('show'); }
+
+// Simple hash
+function hashPass(p){ let h=0; for(let c of p){h=(h<<5)-h+c.charCodeAt(0);h|=0;} return h.toString(36); }
+
+// ═══════════════════════════════════════
+// BIOMETRIC AUTH
+// ═══════════════════════════════════════
+async function doBiometric(){
+  if(!window.PublicKeyCredential){ toast('Biometric not supported on this device/browser'); return; }
+  try {
+    // Check if credential exists
+    const credId = localStorage.getItem('kc_cred_id');
+    if(!credId){ toast('Set up biometric: log in with password first, then enable it in settings'); return; }
+    const challenge = new Uint8Array(32);
+    crypto.getRandomValues(challenge);
+    const assertion = await navigator.credentials.get({
+      publicKey:{
+        challenge,
+        allowCredentials:[{type:'public-key',id:Uint8Array.from(atob(credId),c=>c.charCodeAt(0))}],
+        userVerification:'required',
+        timeout:60000
+      }
+    });
+    if(assertion){
+      // Load saved user
+      const email = localStorage.getItem('kc_email');
+      if(!email){ showErr('login-err','No saved account found. Please log in with password.'); return; }
+      showLoading('Verifying...');
+      const users = await db.getUser(email);
+      if(!users||!users.length){ hideLoading(); showErr('login-err','Account not found.'); return; }
+      APP.user = users[0];
+      await afterLogin();
+    }
+  } catch(e){
+    if(e.name!=='NotAllowedError') toast('Biometric failed: '+e.message);
+  }
+}
+
+async function registerBiometric(){
+  if(!window.PublicKeyCredential) return;
+  try {
+    const challenge = new Uint8Array(32); crypto.getRandomValues(challenge);
+    const userId = new TextEncoder().encode(APP.user.id);
+    const cred = await navigator.credentials.create({
+      publicKey:{
+        challenge, rp:{name:'Kabomo Collections',id:location.hostname||'localhost'},
+        user:{id:userId,name:APP.user.email,displayName:APP.user.full_name},
+        pubKeyCredParams:[{alg:-7,type:'public-key'},{alg:-257,type:'public-key'}],
+        authenticatorSelection:{userVerification:'required'},
+        timeout:60000
+      }
+    });
+    if(cred){
+      const b64=btoa(String.fromCharCode(...new Uint8Array(cred.rawId)));
+      localStorage.setItem('kc_cred_id',b64);
+      localStorage.setItem('kc_email',APP.user.email);
+      toast('✅ Fingerprint / Face ID enabled!');
+    }
+  } catch(e){ /* user declined, that's ok */ }
+}
+
+// ═══════════════════════════════════════
+// AUTH FLOWS
+// ═══════════════════════════════════════
+async function doSetup(){
+  hideErr('setup-err');
+  const name=document.getElementById('su-name').value.trim();
+  const email=document.getElementById('su-email').value.trim();
+  const pass=document.getElementById('su-pass').value;
+  const pass2=document.getElementById('su-pass2').value;
+  const sq=document.getElementById('su-sq').value;
+  const sa=document.getElementById('su-sa').value.trim().toLowerCase();
+  const cap=parseFloat(document.getElementById('su-cap').value)||0;
+  if(!name||!email||!pass||!sq||!sa){ showErr('setup-err','Please fill all fields.'); return; }
+  if(pass!==pass2){ showErr('setup-err','Passwords do not match.'); return; }
+  if(pass.length<6){ showErr('setup-err','Password must be at least 6 characters.'); return; }
+  showLoading('Creating your account...');
+  try {
+    const existing = await db.getUser(email);
+    if(existing&&existing.length){ hideLoading(); showErr('setup-err','An account with this email already exists.'); return; }
+    const user = await db.createUser({full_name:name,email,password_hash:hashPass(pass),security_question:sq,security_answer:hashPass(sa),capital:cap});
+    APP.user = user[0];
+    localStorage.setItem('kc_email',email);
+    hideLoading();
+    await registerBiometric();
+    await afterLogin();
+  } catch(e){ hideLoading(); showErr('setup-err','Error: '+e.message); }
+}
+
+async function doLogin(){
+  hideErr('login-err');
+  const email=document.getElementById('li-email').value.trim();
+  const pass=document.getElementById('li-pass').value;
+  if(!email||!pass){ showErr('login-err','Please enter email and password.'); return; }
+  showLoading('Signing in...');
+  try {
+    const users = await db.getUser(email);
+    if(!users||!users.length){ hideLoading(); showErr('login-err','No account found with this email.'); return; }
+    const u=users[0];
+    if(u.password_hash!==hashPass(pass)){ hideLoading(); showErr('login-err','Incorrect password.'); return; }
+    APP.user=u;
+    localStorage.setItem('kc_email',email);
+    // Offer biometric if not yet set up
+    if(!localStorage.getItem('kc_cred_id')) await registerBiometric();
+    hideLoading();
+    await afterLogin();
+  } catch(e){ hideLoading(); showErr('login-err','Error: '+e.message); }
+}
+
+async function forgotStep1(){
+  hideErr('forgot-err'); document.getElementById('forgot-ok').style.display='none';
+  const email=document.getElementById('fp-email').value.trim();
+  if(!email){ showErr('forgot-err','Please enter your email.'); return; }
+  showLoading('Looking up account...');
+  try {
+    const users=await db.getUser(email);
+    hideLoading();
+    if(!users||!users.length){ showErr('forgot-err','No account found with this email.'); return; }
+    document.getElementById('sq-display').textContent='Security Question: '+users[0].security_question;
+    document.getElementById('forgot-step1').style.display='none';
+    document.getElementById('forgot-step2').style.display='block';
+    document.getElementById('fp-email').dataset.uid=users[0].id;
+    document.getElementById('fp-email').dataset.ans=users[0].security_answer;
+  } catch(e){ hideLoading(); showErr('forgot-err','Error: '+e.message); }
+}
+
+async function forgotStep2(){
+  hideErr('forgot-err');
+  const ans=document.getElementById('fp-ans').value.trim().toLowerCase();
+  const newpass=document.getElementById('fp-newpass').value;
+  const storedAns=document.getElementById('fp-email').dataset.ans;
+  const uid=document.getElementById('fp-email').dataset.uid;
+  if(!ans||!newpass){ showErr('forgot-err','Please fill all fields.'); return; }
+  if(hashPass(ans)!==storedAns){ showErr('forgot-err','Incorrect answer.'); return; }
+  if(newpass.length<6){ showErr('forgot-err','Password must be at least 6 characters.'); return; }
+  showLoading('Resetting password...');
+  try {
+    await db.updateUser(uid,{password_hash:hashPass(newpass)});
+    hideLoading();
+    const ok=document.getElementById('forgot-ok');
+    ok.textContent='✅ Password reset! You can now sign in.';
+    ok.style.display='block';
+    document.getElementById('forgot-step2').style.display='none';
+  } catch(e){ hideLoading(); showErr('forgot-err','Error: '+e.message); }
+}
+
+// ═══════════════════════════════════════
+// AFTER LOGIN
+// ═══════════════════════════════════════
+async function afterLogin(){
+  showLoading('Loading your store...');
+  try {
+    const [catalog,txns,todayTxns]=await Promise.all([
+      db.getCatalog(APP.user.id),
+      db.getTransactions(APP.user.id),
+      db.getTodayStats(APP.user.id)
+    ]);
+    APP.catalog=catalog||[];
+    APP.todaySales=(todayTxns||[]).reduce((s,t)=>s+(t.total_amount||0),0);
+    APP.todayProfit=(todayTxns||[]).reduce((s,t)=>s+(t.profit||0),0);
+    renderAllStats();
+    renderCatalog();
+    populateSellSelect();
+    renderHistory(txns||[]);
+    hideLoading();
+    showScreen('s-app');
+    checkLowStock();
+  } catch(e){ hideLoading(); toast('Could not load data: '+e.message); showScreen('s-app'); }
+}
+
+// ═══════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════
+function switchTab(name,btn){
+  document.querySelectorAll('.tab-pane').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tp-'+name).classList.add('active');
+  btn.classList.add('active');
+  if(name==='sell') populateSellSelect();
+  if(name==='history') refreshHistory();
+  if(name==='catalog') renderCatalog();
+}
+
+// ═══════════════════════════════════════
+// CATALOG
+// ═══════════════════════════════════════
+function renderCatalog(items){
+  const list=items||APP.catalog;
+  const g=document.getElementById('catalog-grid');
+  if(!list.length){g.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;font-size:13px;color:var(--muted)">No items yet. Tap + Add to get started.</div>';return;}
+  g.innerHTML=list.map(it=>{
+    const low=it.quantity===1,out=it.quantity===0;
+    const badge=out?'<span class="out-badge">Out of stock</span>':low?'<span class="low-badge">Low stock</span>':'';
+    const imgContent=it.image_url?`<img src="${it.image_url}" alt="${it.name}">`:`<span class="cat-img-emoji">${it.emoji||'💎'}</span>`;
+    const margin=it.sell_price-it.cost_price;
+    return `<div class="cat-card">
+      <div class="cat-img">${imgContent}${badge}</div>
+      <div class="cat-body">
+        <div class="cat-name">${it.name}</div>
+        <div class="cat-desc">${it.description||'No description'}</div>
+        <div class="cat-price">${fmt(it.sell_price)}</div>
+        <div class="cat-meta">
+          <span class="cat-margin">+${fmt(margin)}</span>
+          <span class="cat-stock">${it.quantity} in stock</span>
+        </div>
+        <div class="cat-actions">
+          <button class="cat-edit-btn" onclick="openEditItem('${it.id}')">✏️ Edit</button>
+          <button class="cat-del-btn" onclick="deleteItem('${it.id}')">🗑 Delete</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filterCatalog(){
+  const q=document.getElementById('cat-search').value.toLowerCase();
+  renderCatalog(q?APP.catalog.filter(i=>i.name.toLowerCase().includes(q)||((i.description||'').toLowerCase().includes(q))):APP.catalog);
+}
+
+function checkLowStock(){
+  const low=APP.catalog.filter(i=>i.quantity<=1).length;
+  const badge=document.querySelector('#nav-catalog .nav-badge');
+  if(low>0){
+    if(!badge){const b=document.createElement('div');b.className='nav-badge';b.id='low-badge';b.textContent=low;document.getElementById('nav-catalog').appendChild(b);}
+    else badge.textContent=low;
+  } else if(badge) badge.remove();
+}
+
+// ── ADD ITEM ──
+function openAddItem(){
+  APP.editingItemId=null; APP.editImgFile=null;
+  document.getElementById('item-modal-title').textContent='Add New Item';
+  ['ei-name','ei-desc','ei-cost','ei-sell'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('ei-qty').value='1';
+  document.getElementById('ei-emoji').value='💎';
+  document.getElementById('ei-img-preview').style.display='none';
+  document.getElementById('edit-item-id').value='';
+  openModal('m-item');
+}
+
+function openEditItem(id){
+  const it=APP.catalog.find(i=>i.id===id); if(!it) return;
+  APP.editingItemId=id; APP.editImgFile=null;
+  document.getElementById('item-modal-title').textContent='Edit Item';
+  document.getElementById('edit-item-id').value=id;
+  document.getElementById('ei-name').value=it.name;
+  document.getElementById('ei-desc').value=it.description||'';
+  document.getElementById('ei-cost').value=it.cost_price;
+  document.getElementById('ei-sell').value=it.sell_price;
+  document.getElementById('ei-qty').value=it.quantity;
+  document.getElementById('ei-emoji').value=it.emoji||'💎';
+  const prev=document.getElementById('ei-img-preview');
+  if(it.image_url){prev.src=it.image_url;prev.style.display='block';}
+  else prev.style.display='none';
+  openModal('m-item');
+}
+
+function previewEditImg(input){
+  if(!input.files[0]) return;
+  APP.editImgFile=input.files[0];
+  const r=new FileReader(); r.onload=e=>{const p=document.getElementById('ei-img-preview');p.src=e.target.result;p.style.display='block';};
+  r.readAsDataURL(input.files[0]);
+}
+
+async function saveItem(){
+  const name=document.getElementById('ei-name').value.trim();
+  const desc=document.getElementById('ei-desc').value.trim();
+  const cost=parseFloat(document.getElementById('ei-cost').value)||0;
+  const sell=parseFloat(document.getElementById('ei-sell').value)||0;
+  const qty=parseInt(document.getElementById('ei-qty').value)||0;
+  const emoji=document.getElementById('ei-emoji').value;
+  if(!name||!sell){ toast('Please enter item name and selling price'); return; }
+  showLoading('Saving item...');
+  try {
+    let imageUrl=APP.editingItemId?(APP.catalog.find(i=>i.id===APP.editingItemId)||{}).image_url:null;
+    if(APP.editImgFile) imageUrl=await uploadImage(APP.editImgFile)||imageUrl;
+    const data={user_id:APP.user.id,name,description:desc,emoji,cost_price:cost,sell_price:sell,quantity:qty,image_url:imageUrl||null,updated_at:new Date().toISOString()};
+    if(APP.editingItemId){
+      await db.updateItem(APP.editingItemId,data);
+      const idx=APP.catalog.findIndex(i=>i.id===APP.editingItemId);
+      if(idx>=0) APP.catalog[idx]={...APP.catalog[idx],...data};
+    } else {
+      const res=await db.upsertItem(data);
+      if(res&&res[0]) APP.catalog.unshift(res[0]);
+    }
+    renderCatalog(); checkLowStock();
+    closeModal('m-item'); hideLoading();
+    toast(APP.editingItemId?'Item updated!':'Item added to catalog!');
+  } catch(e){ hideLoading(); toast('Error saving item: '+e.message); }
+}
+
+async function deleteItem(id){
+  if(!confirm('Delete this item from catalog?')) return;
+  showLoading('Deleting...');
+  try {
+    await db.deleteItem(id);
+    APP.catalog=APP.catalog.filter(i=>i.id!==id);
+    renderCatalog(); checkLowStock(); hideLoading(); toast('Item removed.');
+  } catch(e){ hideLoading(); toast('Error: '+e.message); }
+}
+
+// ═══════════════════════════════════════
+// SELL
+// ═══════════════════════════════════════
+function populateSellSelect(){
+  const sel=document.getElementById('sell-item');
+  sel.innerHTML='<option value="">— select item —</option>'+
+    APP.catalog.filter(i=>i.quantity>0).map(i=>`<option value="${i.id}">${i.emoji||'💎'} ${i.name} (${fmt(i.sell_price)})</option>`).join('');
+  document.getElementById('sell-price').value='';
+  updateSellPreview();
+}
+
+function onSellItemChange(){
+  const id=document.getElementById('sell-item').value;
+  const it=APP.catalog.find(i=>i.id===id);
+  if(it) document.getElementById('sell-price').placeholder=fmt(it.sell_price);
+  updateSellPreview();
+}
+
+function updateSellPreview(){
+  const id=document.getElementById('sell-item').value;
+  const qty=parseInt(document.getElementById('sell-qty').value)||1;
+  const priceIn=parseFloat(document.getElementById('sell-price').value);
+  const it=APP.catalog.find(i=>i.id===id);
+  if(!it){document.getElementById('pv-total').textContent='₦0';document.getElementById('pv-profit').textContent='₦0';return;}
+  const price=priceIn||it.sell_price;
+  document.getElementById('pv-total').textContent=fmt(price*qty);
+  document.getElementById('pv-profit').textContent=fmt((price-it.cost_price)*qty);
+}
+
+async function confirmSale(){
+  const id=document.getElementById('sell-item').value;
+  const qty=parseInt(document.getElementById('sell-qty').value)||1;
+  const priceIn=parseFloat(document.getElementById('sell-price').value);
+  const cust=document.getElementById('sell-cust').value||'';
+  const pay=document.getElementById('sell-pay').value;
+  const it=APP.catalog.find(i=>i.id===id);
+  if(!it){toast('Please select an item');return;}
+  if(qty>it.quantity){toast('Not enough stock! Only '+it.quantity+' available.');return;}
+  const price=priceIn||it.sell_price;
+  const total=price*qty;
+  const profit=(price-it.cost_price)*qty;
+  showLoading('Recording sale...');
+  try {
+    const txn={user_id:APP.user.id,type:'sale',item_name:it.name,item_emoji:it.emoji||'💎',quantity:qty,unit_price:price,total_amount:total,cost_price:it.cost_price,profit,payment_method:pay,customer_name:cust};
+    await db.addTransaction(txn);
+    // Update stock
+    await db.updateItem(it.id,{quantity:it.quantity-qty,updated_at:new Date().toISOString()});
+    const idx=APP.catalog.findIndex(i=>i.id===it.id);
+    if(idx>=0) APP.catalog[idx].quantity-=qty;
+    // Update capital
+    await db.updateUser(APP.user.id,{capital:(APP.user.capital||0)+profit});
+    APP.user.capital=(APP.user.capital||0)+profit;
+    APP.todaySales+=total; APP.todayProfit+=profit;
+    renderAllStats(); checkLowStock();
+    const t=nowStr();
+    addChatMsg('sale',`${it.emoji||'💎'} Sold ${qty}× ${it.name} for ${fmt(total)} via ${pay}. Profit: +${fmt(profit)}`,t);
+    hideLoading();
+    showReceipt({type:'sale',item:it,qty,price,total,profit,pay,cust,time:t});
+  } catch(e){ hideLoading(); toast('Error: '+e.message); }
+}
+
+// ═══════════════════════════════════════
+// BUY STOCK
+// ═══════════════════════════════════════
+function previewBuyImg(input){
+  if(!input.files[0]) return;
+  APP.buyImgFile=input.files[0];
+  const r=new FileReader(); r.onload=e=>{const p=document.getElementById('buy-img-preview');p.src=e.target.result;p.style.display='block';};
+  r.readAsDataURL(input.files[0]);
+}
+
+async function confirmPurchase(){
+  const name=document.getElementById('buy-name').value.trim();
+  const emoji=document.getElementById('buy-emoji').value;
+  const desc=document.getElementById('buy-desc').value.trim();
+  const cost=parseFloat(document.getElementById('buy-cost').value);
+  const sell=parseFloat(document.getElementById('buy-sell').value);
+  const qty=parseInt(document.getElementById('buy-qty').value)||1;
+  if(!name||!cost||!sell){toast('Please fill all required fields');return;}
+  const total=cost*qty;
+  showLoading('Adding stock...');
+  try {
+    let imageUrl=null;
+    if(APP.buyImgFile) imageUrl=await uploadImage(APP.buyImgFile);
+    // Check if item exists
+    const existing=APP.catalog.find(i=>i.name.toLowerCase()===name.toLowerCase());
+    if(existing){
+      await db.updateItem(existing.id,{quantity:existing.quantity+qty,cost_price:cost,sell_price:sell,description:desc||existing.description,image_url:imageUrl||existing.image_url,updated_at:new Date().toISOString()});
+      const idx=APP.catalog.findIndex(i=>i.id===existing.id);
+      if(idx>=0){APP.catalog[idx].quantity+=qty;APP.catalog[idx].cost_price=cost;APP.catalog[idx].sell_price=sell;}
+    } else {
+      const res=await db.upsertItem({user_id:APP.user.id,name,description:desc,emoji,cost_price:cost,sell_price:sell,quantity:qty,image_url:imageUrl||null});
+      if(res&&res[0]) APP.catalog.unshift(res[0]);
+    }
+    await db.addTransaction({user_id:APP.user.id,type:'purchase',item_name:name,item_emoji:emoji,quantity:qty,unit_price:cost,total_amount:total,cost_price:cost,profit:0,notes:'Purchased from Kano'});
+    await db.updateUser(APP.user.id,{capital:(APP.user.capital||0)-total});
+    APP.user.capital=(APP.user.capital||0)-total;
+    renderAllStats(); checkLowStock();
+    const t=nowStr();
+    addChatMsg('purchase',`${emoji} Bought ${qty}× ${name} from Kano. Total spent: ${fmt(total)}. Expected profit/item: +${fmt(sell-cost)}`,t);
+    ['buy-name','buy-desc','buy-cost','buy-sell'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('buy-qty').value='1';
+    document.getElementById('buy-img-preview').style.display='none';
+    APP.buyImgFile=null;
+    hideLoading();
+    showPurchaseReceipt({name,emoji,cost,sell,qty,total,margin:sell-cost,time:t});
+  } catch(e){ hideLoading(); toast('Error: '+e.message); }
+}
+
+// ═══════════════════════════════════════
+// RECEIPT
+// ═══════════════════════════════════════
+function showReceipt(d){
+  APP.lastReceipt=d;
+  document.getElementById('receipt-body').innerHTML=`
+    <div class="r-row muted"><span>Date & Time</span><span>${d.time}</span></div>
+    ${d.cust?`<div class="r-row muted"><span>Customer</span><span>${d.cust}</span></div>`:''}
+    <div class="r-row muted"><span>Payment</span><span>${d.pay}</span></div>
+    <hr style="border:none;border-top:1px dashed var(--border);margin:8px 0">
+    <div class="r-row"><span>${d.item.emoji||'💎'} ${d.item.name}</span><span>${fmt(d.price)}</span></div>
+    <div class="r-row muted"><span>Quantity</span><span>× ${d.qty}</span></div>
+    <div class="r-row total"><span>Total Paid</span><span>${fmt(d.total)}</span></div>
+    <div class="r-profit-banner">Your profit on this sale: ${fmt(d.profit)} 🎉</div>
+  `;
+  openModal('m-receipt');
+}
+
+function showPurchaseReceipt(d){
+  APP.lastReceipt=d;
+  document.getElementById('receipt-body').innerHTML=`
+    <div class="r-row muted"><span>Date & Time</span><span>${d.time}</span></div>
+    <div class="r-row muted"><span>Supplier</span><span>Kano Market</span></div>
+    <hr style="border:none;border-top:1px dashed var(--border);margin:8px 0">
+    <div class="r-row"><span>${d.emoji} ${d.name}</span><span>${fmt(d.cost)}/item</span></div>
+    <div class="r-row muted"><span>Quantity bought</span><span>× ${d.qty}</span></div>
+    <div class="r-row total"><span>Total Spent</span><span>${fmt(d.total)}</span></div>
+    <div class="r-profit-banner">Expected profit per item: ${fmt(d.margin)} (${Math.round((d.margin/d.cost)*100)}% margin)</div>
+  `;
+  openModal('m-receipt');
+}
+
+function printReceipt(){ window.print(); }
+function sendWhatsApp(){ toast('Opening WhatsApp...'); window.open('https://wa.me/'); }
+function saveReceipt(){ toast('Receipt saved!'); }
+
+// ═══════════════════════════════════════
+// HISTORY
+// ═══════════════════════════════════════
+async function refreshHistory(){
+  showLoading('Loading history...');
+  try {
+    const txns=await db.getTransactions(APP.user.id);
+    renderHistory(txns||[]);
+    hideLoading();
+  } catch(e){ hideLoading(); toast('Could not load history'); }
+}
+
+function renderHistory(txns){
+  const list=document.getElementById('hist-list');
+  if(!txns.length){list.innerHTML='<div style="text-align:center;padding:40px;font-size:13px;color:var(--muted)">No transactions yet.</div>';return;}
+  list.innerHTML=txns.map(t=>{
+    const isSale=t.type==='sale';
+    const amt=isSale?'+'+fmt(t.profit):'-'+fmt(t.total_amount);
+    const sub=isSale?`${t.quantity}× · ${t.payment_method}${t.customer_name?' · '+t.customer_name:''}`:
+                     `${t.quantity}× · Kano`;
+    const d=new Date(t.created_at);
+    const timeStr=d.toLocaleDateString('en-NG',{day:'numeric',month:'short'})+' · '+d.toLocaleTimeString('en-NG',{hour:'2-digit',minute:'2-digit'});
+    return `<div class="hist-item">
+      <div class="hist-emoji ${t.type}">${t.item_emoji||'💎'}</div>
+      <div class="hist-info">
+        <div class="hist-name">${t.item_name}</div>
+        <div class="hist-sub">${sub}</div>
+      </div>
+      <div class="hist-right">
+        <div class="hist-amt ${t.type}">${amt}</div>
+        <div class="hist-time">${timeStr}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════
+// STATS & DAILY REPORT
+// ═══════════════════════════════════════
+function renderAllStats(){
+  document.getElementById('st-sales').textContent=fmt(APP.todaySales);
+  document.getElementById('st-profit').textContent=fmt(APP.todayProfit);
+  document.getElementById('st-capital').textContent=fmt(APP.user?.capital||0);
+  document.getElementById('cap-hd').textContent=Math.round(APP.user?.capital||0).toLocaleString();
+  document.getElementById('st-stock').textContent=APP.catalog.reduce((s,i)=>s+i.quantity,0);
+}
+
+function showDailyReport(){
+  const d=new Date();
+  document.getElementById('report-date').textContent=d.toLocaleDateString('en-NG',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const totalStock=APP.catalog.reduce((s,i)=>s+i.quantity,0);
+  const lowItems=APP.catalog.filter(i=>i.quantity<=1);
+  document.getElementById('report-body').innerHTML=`
+    <div class="report-stat"><span class="rs-lbl">Total Sales Today</span><span class="rs-val">${fmt(APP.todaySales)}</span></div>
+    <div class="report-stat"><span class="rs-lbl">Total Profit Today</span><span class="rs-val green">${fmt(APP.todayProfit)}</span></div>
+    <div class="report-stat"><span class="rs-lbl">Capital Remaining</span><span class="rs-val">${fmt(APP.user?.capital||0)}</span></div>
+    <div class="report-stat"><span class="rs-lbl">Items in Stock</span><span class="rs-val">${totalStock} pieces</span></div>
+    ${lowItems.length?`<div class="report-stat"><span class="rs-lbl" style="color:var(--red)">⚠️ Low / Out of Stock</span><span class="rs-val" style="color:var(--red);font-size:14px">${lowItems.map(i=>i.name).join(', ')}</span></div>`:''}
+  `;
+  openModal('m-report');
+}
+
+// ═══════════════════════════════════════
+// ACTIVITY FEED
+// ═══════════════════════════════════════
+function addChatMsg(type,text,time){
+  const feed=document.getElementById('chat-feed');
+  const d=document.createElement('div');
+  d.className='chat-msg '+type;
+  d.innerHTML=text+'<div class="chat-time">'+time+'</div>';
+  feed.appendChild(d);
+  feed.scrollTop=feed.scrollHeight;
+}
+
+// ═══════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════
+async function init(){
+  setLogos();
+  // Load logo from Supabase storage if saved
+  const savedLogo = 'data:image/png;base64,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';
+
+  // Try to load actual logo from file
+  fetch('kabomo_logo.png').then(r=>{
+    if(r.ok) r.blob().then(b=>{
+      const url=URL.createObjectURL(b);
+      ['splash-img','setup-img','login-img','forgot-img','app-logo-img','r-logo'].forEach(id=>{
+        const el=document.getElementById(id); if(el) el.src=url;
+      });
+    });
+  }).catch(()=>{});
+
+  // Actually embed the logo as the uploaded image
+  const logoSrc = document.currentScript ? 
+    document.currentScript.getAttribute('data-logo') : null;
+
+  setTimeout(async ()=>{
+    const savedEmail=localStorage.getItem('kc_email');
+    const savedCred=localStorage.getItem('kc_cred_id');
+    if(savedEmail&&savedCred){
+      // Try biometric auto-login
+      showScreen('s-login');
+      document.getElementById('li-email').value=savedEmail;
+    } else if(savedEmail){
+      showScreen('s-login');
+      document.getElementById('li-email').value=savedEmail;
+    } else {
+      // Check if any users exist
+      showScreen('s-setup');
+    }
+  },2800);
+}
+
+// Load logo from uploaded file
+(function loadLogo(){
+  // Use the uploaded Kabomo logo - embed as data URL
+  const img = new Image();
+  img.crossOrigin='anonymous';
+  img.onload = function(){
+    const canvas=document.createElement('canvas');
+    canvas.width=img.naturalWidth; canvas.height=img.naturalHeight;
+    canvas.getContext('2d').drawImage(img,0,0);
+    try {
+      const data=canvas.toDataURL('image/png');
+      localStorage.setItem('kc_logo',data);
+      setLogos();
+    } catch(e){}
+  };
+  // The logo will be loaded from the same directory
+  img.src='Screenshot_2026-05-26_141025.png';
+})();
+
+init();
+</script>
+</body>
+</html>

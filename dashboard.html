@@ -151,8 +151,11 @@
           </select>
           <select class="form-control" id="job-filter-service" onchange="renderJobs()">
             <option value="">All Services</option>
-            <option>Cleaning</option><option>Laundry</option>
-            <option>Upholstery</option><option>Fumigation</option>
+            <option>Construction</option>
+            <option>Building Materials Supply</option>
+            <option>Automobile Sales</option>
+            <option>Engineering Projects</option>
+            <option>Cleaning Services</option>
           </select>
         </div>
         <div class="table-wrap">
@@ -287,6 +290,21 @@
         </div>
       </div>
 
+      <!-- ==================== GALLERY ==================== -->
+      <div id="panel-gallery" class="panel">
+        <div class="page-header">
+          <div>
+            <div class="page-title">GALLERY</div>
+            <div class="page-subtitle" id="gallery-subtitle"></div>
+          </div>
+          <button class="btn btn-primary" onclick="openGalleryModal()">+ Add Photo</button>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;" id="gallery-admin-grid"></div>
+        <div class="small-note" style="margin-top:1rem;">
+          Photos uploaded here appear immediately on the public Gallery page and the homepage. Max 5MB per photo.
+        </div>
+      </div>
+
       <!-- ==================== USERS ==================== -->
       <div id="panel-users" class="panel">
         <div class="page-header">
@@ -296,7 +314,7 @@
         <div class="table-wrap">
           <table>
             <thead><tr>
-              <th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Actions</th>
+              <th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Access</th><th>Actions</th>
             </tr></thead>
             <tbody id="users-tbody"></tbody>
           </table>
@@ -366,8 +384,11 @@
           <label class="form-label">Service *</label>
           <select class="form-control" id="job-service">
             <option value="">-- Select Service --</option>
-            <option>Cleaning</option><option>Laundry</option>
-            <option>Upholstery</option><option>Fumigation</option>
+            <option>Construction</option>
+            <option>Building Materials Supply</option>
+            <option>Automobile Sales</option>
+            <option>Engineering Projects</option>
+            <option>Cleaning Services</option>
           </select>
         </div>
         <div class="form-group">
@@ -589,9 +610,50 @@
   </div>
 </div>
 
+<!-- GALLERY UPLOAD MODAL -->
+<div class="modal-overlay" id="modal-gallery">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Add Gallery Photo</div>
+      <button class="modal-close" onclick="closeModal('modal-gallery')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Title *</label>
+        <input class="form-control" id="gallery-title" placeholder="e.g. Duplex Construction — Kawo, Kaduna">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Category *</label>
+        <select class="form-control" id="gallery-category">
+          <option>Construction</option>
+          <option>Building Materials Supply</option>
+          <option>Automobile Sales</option>
+          <option>Engineering Projects</option>
+          <option>Cleaning Services</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <textarea class="form-control" id="gallery-desc" rows="2" placeholder="Brief description of the project or job (optional)"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Photo *</label>
+        <input class="form-control" id="gallery-file" type="file" accept="image/*" onchange="previewGalleryImage(this)">
+        <div class="form-hint">Max 5MB. JPG or PNG recommended.</div>
+        <div id="gallery-preview"></div>
+      </div>
+      <div id="gallery-modal-alert" class="alert alert-danger d-none"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-gallery')">Cancel</button>
+      <button class="btn btn-primary" id="gallery-save-btn" onclick="saveGalleryItem()">Upload Photo</button>
+    </div>
+  </div>
+</div>
+
 <!-- USER MODAL -->
 <div class="modal-overlay" id="modal-user">
-  <div class="modal">
+  <div class="modal modal-lg">
     <div class="modal-header">
       <div class="modal-title" id="modal-user-title">Add User</div>
       <button class="modal-close" onclick="closeModal('modal-user')">×</button>
@@ -614,12 +676,16 @@
         </div>
         <div class="form-group">
           <label class="form-label">Role</label>
-          <select class="form-control" id="user-role">
+          <select class="form-control" id="user-role" onchange="document.getElementById('user-permissions-section').style.display = this.value==='Proprietor' ? 'none' : 'block'">
             <option>Staff</option><option>Proprietor</option>
           </select>
         </div>
       </div>
-      <div id="user-modal-alert" class="alert alert-danger d-none"></div>
+      <div id="user-permissions-section">
+        <label class="form-label">Section Access (Staff Only)</label>
+        <div id="user-permissions-wrap"></div>
+      </div>
+      <div id="user-modal-alert" class="alert alert-danger d-none" style="margin-top:1rem;"></div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="closeModal('modal-user')">Cancel</button>
