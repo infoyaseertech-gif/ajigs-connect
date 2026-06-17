@@ -6,7 +6,7 @@
 
 'use strict';
 
-const CACHE_NAME    = 'ajigs-v1';
+const CACHE_NAME    = 'ajigs-v2';
 const OFFLINE_URL   = '/index.html';
 
 // Files to pre-cache on install
@@ -16,11 +16,13 @@ const PRECACHE_URLS = [
   '/about.html',
   '/services.html',
   '/contact.html',
+  '/gallery.html',
   '/login.html',
   '/css/style.css',
   '/css/erp.css',
   '/js/main.js',
   '/js/pwa.js',
+  '/js/gallery.js',
   '/manifest.json',
   '/assets/icon-192.png',
   '/assets/icon-512.png',

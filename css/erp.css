@@ -661,52 +661,24 @@ select.form-control { cursor: pointer; }
   margin-bottom: 36px;
 }
 
-/* Logo Box — matches actual AJIGS CONNECT logo */
+/* Logo Box — uses actual AJIGS CONNECT logo image extracted from Invoice #128 */
 .inv-logo-box {
-  background: #0a0a0a;
-  padding: 14px 18px 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-width: 130px;
-}
-.inv-logo-triangle {
-  width: 0;
-  height: 0;
-  border-left: 18px solid transparent;
-  border-right: 18px solid transparent;
-  border-bottom: 14px solid #E87722;
-  margin-bottom: 4px;
-}
-.inv-logo-letters {
-  font-family: 'Oswald', sans-serif;
-  font-size: 30px;
-  font-weight: 700;
-  color: #fff;
-  letter-spacing: 3px;
-  line-height: 1;
-}
-.inv-logo-connect {
-  font-family: 'Oswald', sans-serif;
-  font-size: 10px;
-  letter-spacing: 8px;
-  color: #fff;
-  margin-top: 2px;
-}
-.inv-logo-tagline {
-  font-size: 7.5px;
-  color: #888;
-  letter-spacing: .8px;
-  font-style: italic;
-  margin-top: 4px;
-  text-align: center;
+  min-width: 180px;
 }
 .inv-logo-rc {
-  font-size: 9px;
-  color: #E87722;
+  font-size: 13px;
+  color: #D32F2F;
   font-weight: 700;
-  letter-spacing: 1px;
-  margin-top: 2px;
+  letter-spacing: 2px;
+  margin-bottom: 6px;
+}
+.inv-logo-img {
+  width: 185px;
+  height: auto;
+  display: block;
 }
 
 .inv-top-right {
