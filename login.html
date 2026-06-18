@@ -75,15 +75,19 @@
 </div>
 
 <script>
-  // =====================================================
-  // LOGIN — uses Supabase auth
-  // Replace YOUR_SUPABASE_URL and YOUR_SUPABASE_ANON_KEY
-  // =====================================================
-  const SUPABASE_URL  = 'https://pelkootzjmcppuljgbqs.supabase.co';
-  const SUPABASE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBlbGtvb3R6am1jcHB1bGpnYnFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk4MDY3NDEsImV4cCI6MjA5NTM4Mjc0MX0.rjuqM25Tx0pQNm-vZ9VdxkePimuUqYapU9bwmUhx2fw';
+  const SUPABASE_URL = 'https://pelkootzjmcppuljgbqs.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBlbGtvb3R6am1jcHB1bGpnYnFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk4MDY3NDEsImV4cCI6MjA5NTM4Mjc0MX0.rjuqM25Tx0pQNm-vZ9VdxkePimuUqYapU9bwmUhx2fw';
+
+  /* Simple hash — enough for internal staff access control */
+  async function hashPassword(password) {
+    const msgBuffer = new TextEncoder().encode(password);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  }
 
   async function doLogin() {
-    const email = document.getElementById('login-email').value.trim();
+    const email = document.getElementById('login-email').value.trim().toLowerCase();
     const pass  = document.getElementById('login-pass').value;
     const errEl = document.getElementById('login-error');
     errEl.classList.add('d-none');
@@ -99,25 +103,51 @@
     btn.disabled = true;
 
     try {
-      const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY },
-        body: JSON.stringify({ email, password: pass })
-      });
-      const data = await res.json();
+      // Look up user in ajigs_app_users table
+      const res = await fetch(
+        `${SUPABASE_URL}/rest/v1/ajigs_app_users?email=eq.${encodeURIComponent(email)}&select=*`,
+        { headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' } }
+      );
+      const users = await res.json();
 
-      if (data.access_token) {
-        // Store session
-        localStorage.setItem('ajigs_token',   data.access_token);
-        localStorage.setItem('ajigs_refresh',  data.refresh_token);
-        localStorage.setItem('ajigs_user_email', email);
-        window.location.href = 'dashboard.html';
-      } else {
-        errEl.textContent = data.error_description || 'Invalid email or password.';
+      if (!Array.isArray(users) || users.length === 0) {
+        errEl.textContent = 'No account found with this email address.';
         errEl.classList.remove('d-none');
         btn.textContent = 'Sign In to Dashboard';
         btn.disabled = false;
+        return;
       }
+
+      const user = users[0];
+
+      if (!user.is_active) {
+        errEl.textContent = 'This account has been deactivated. Contact the Proprietor.';
+        errEl.classList.remove('d-none');
+        btn.textContent = 'Sign In to Dashboard';
+        btn.disabled = false;
+        return;
+      }
+
+      // Check password
+      const hashed = await hashPassword(pass);
+      if (user.password_hash !== hashed) {
+        errEl.textContent = 'Incorrect password. Please try again.';
+        errEl.classList.remove('d-none');
+        btn.textContent = 'Sign In to Dashboard';
+        btn.disabled = false;
+        return;
+      }
+
+      // Success — store session (use anon key as token since we handle auth ourselves)
+      const sessionToken = btoa(JSON.stringify({ id: user.id, email, role: user.role, ts: Date.now() }));
+      localStorage.setItem('ajigs_token',       SUPABASE_KEY);
+      localStorage.setItem('ajigs_refresh',     sessionToken);
+      localStorage.setItem('ajigs_user_email',  email);
+      localStorage.setItem('ajigs_user_name',   user.name);
+      localStorage.setItem('ajigs_user_role',   user.role);
+      localStorage.setItem('ajigs_permissions', JSON.stringify(user.permissions || []));
+      window.location.href = 'dashboard.html';
+
     } catch(e) {
       errEl.textContent = 'Connection error. Check your internet and try again.';
       errEl.classList.remove('d-none');
@@ -137,21 +167,11 @@
   }
 
   function doReset() {
-    const email   = document.getElementById('reset-email').value.trim();
-    const code    = document.getElementById('reset-code').value.trim();
-    const newpass = document.getElementById('reset-newpass').value;
-    const errEl   = document.getElementById('login-error');
-    const okEl    = document.getElementById('reset-success');
+    const errEl = document.getElementById('login-error');
+    const okEl  = document.getElementById('reset-success');
     errEl.classList.add('d-none');
     okEl.classList.add('d-none');
-
-    if (!email || !code || !newpass) {
-      errEl.textContent = 'Please fill all fields.';
-      errEl.classList.remove('d-none');
-      return;
-    }
-    // In production: validate reset code from Supabase or your backend
-    okEl.textContent = 'If the code is valid, your password has been reset. Contact your Proprietor to confirm.';
+    okEl.textContent = 'Contact the Proprietor to reset your password. They can update it from the Staff & Logins panel in the dashboard.';
     okEl.classList.remove('d-none');
   }
 
@@ -161,7 +181,7 @@
   });
 
   // Redirect if already logged in
-  if (localStorage.getItem('ajigs_token')) {
+  if (localStorage.getItem('ajigs_token') && localStorage.getItem('ajigs_user_email')) {
     window.location.href = 'dashboard.html';
   }
 </script>

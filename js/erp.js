@@ -108,17 +108,33 @@ async function initAuth() {
   const email = localStorage.getItem('ajigs_user_email');
   if (!token || !email) { window.location.href = 'login.html'; return; }
 
-  const rows = await sb(`ajigs_app_users?email=eq.${encodeURIComponent(email)}&select=*`);
-  if (rows && rows.length) {
-    currentUser = rows[0];
-    // Parse permissions JSON if stored as string
-    if (typeof currentUser.permissions === 'string') {
-      try { currentUser.permissions = JSON.parse(currentUser.permissions); }
-      catch(e) { currentUser.permissions = ALL_SECTIONS; }
+  // First use cached data for instant load
+  const cachedName  = localStorage.getItem('ajigs_user_name')  || email.split('@')[0];
+  const cachedRole  = localStorage.getItem('ajigs_user_role')  || 'Staff';
+  let   cachedPerms = [];
+  try {
+    const stored = localStorage.getItem('ajigs_permissions');
+    cachedPerms = stored ? JSON.parse(stored) : [];
+  } catch(e) { cachedPerms = []; }
+
+  currentUser = { name: cachedName, email, role: cachedRole, permissions: cachedPerms };
+
+  // Then refresh from DB in background
+  try {
+    const rows = await sb(`ajigs_app_users?email=eq.${encodeURIComponent(email)}&select=*`);
+    if (rows && rows.length) {
+      const u = rows[0];
+      let perms = u.permissions;
+      if (typeof perms === 'string') { try { perms = JSON.parse(perms); } catch(e) { perms = ALL_SECTIONS; } }
+      if (!perms) perms = ALL_SECTIONS;
+      currentUser = { ...u, permissions: perms };
+      // Update cache
+      localStorage.setItem('ajigs_user_name',   u.name);
+      localStorage.setItem('ajigs_user_role',   u.role);
+      localStorage.setItem('ajigs_permissions', JSON.stringify(perms));
     }
-    if (!currentUser.permissions) currentUser.permissions = ALL_SECTIONS;
-  } else {
-    currentUser = { name: email.split('@')[0], email, role: 'Staff', permissions: [] };
+  } catch(e) {
+    // Use cached data if DB unreachable
   }
 
   // Set topbar
@@ -126,10 +142,8 @@ async function initAuth() {
   document.getElementById('topbar-role').textContent   = currentUser.role;
   document.getElementById('topbar-avatar').textContent = currentUser.name.charAt(0).toUpperCase();
 
-  // Build sidebar based on permissions
   buildSidebar();
 
-  // Navigate to dashboard or first accessible section
   const firstNav = document.querySelector('.sidebar-item[data-panel]');
   if (firstNav) {
     const panel = firstNav.getAttribute('data-panel');
@@ -975,6 +989,7 @@ async function deleteStaff(id) {
 /* Login modal — grant/edit login access for a staff member */
 async function openLoginModal(staffId) {
   editingId.loginStaff = staffId;
+  editingId.loginStaffHasLogin = !!(s.has_login && s.email);
   const rows = await sb(`ajigs_staff?id=eq.${staffId}&select=*`) || [];
   if (!rows.length) return;
   const s = rows[0];
@@ -1020,6 +1035,14 @@ function setLoginPerms(checked) {
   });
 }
 
+/* Simple password hash — matches login.html */
+async function hashPassword(password) {
+  const msgBuffer = new TextEncoder().encode(password);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
 async function saveLoginAccess() {
   const email   = document.getElementById('login-staff-email').value.trim().toLowerCase();
   const pass    = document.getElementById('login-staff-pass').value;
@@ -1037,6 +1060,13 @@ async function saveLoginAccess() {
     return;
   }
 
+  if (!pass && !editingId.loginStaffHasLogin) {
+    alertEl.textContent = 'Password is required when granting login for the first time.';
+    alertEl.className = 'alert alert-danger';
+    alertEl.classList.remove('d-none');
+    return;
+  }
+
   const perms = role === 'Proprietor'
     ? ALL_SECTIONS
     : ALL_SECTIONS.filter(sec => {
@@ -1048,20 +1078,23 @@ async function saveLoginAccess() {
   saveBtn.disabled = true;
 
   try {
-    // 1. Update ajigs_staff row with login fields
+    // Hash password if provided
+    let passwordHash = null;
+    if (pass) {
+      passwordHash = await hashPassword(pass);
+    }
+
+    // 1. Update ajigs_staff row
     const staffPatch = await sb(
       `ajigs_staff?id=eq.${editingId.loginStaff}`,
       'PATCH',
       { email, has_login: true, app_role: role, permissions: JSON.stringify(perms) }
     );
-
-    // sb() returns [] on successful PATCH with no body, or array of updated rows
-    // null means a real error occurred
     if (staffPatch === null) {
-      throw new Error('Could not update staff record. Make sure you have run FIX_PERMISSIONS.sql in Supabase.');
+      throw new Error('Could not update staff record. Make sure you have run RUN_THIS_NOW.sql in Supabase.');
     }
 
-    // 2. Upsert into ajigs_app_users so login lookup works
+    // 2. Check if user already exists in ajigs_app_users
     const staffName = document.getElementById('login-modal-staff-name').textContent.trim();
     const existing  = await sb(`ajigs_app_users?email=eq.${encodeURIComponent(email)}&select=id`) || [];
 
@@ -1071,39 +1104,30 @@ async function saveLoginAccess() {
       role,
       permissions: JSON.stringify(perms),
       is_active:   true,
+      ...(passwordHash ? { password_hash: passwordHash } : {}),
     };
 
     if (existing.length) {
-      await sb(`ajigs_app_users?id=eq.${existing[0].id}`, 'PATCH', {
-        role, permissions: JSON.stringify(perms), is_active: true,
-      });
+      // Update existing user
+      const patchData = { role, permissions: JSON.stringify(perms), is_active: true };
+      if (passwordHash) patchData.password_hash = passwordHash;
+      await sb(`ajigs_app_users?id=eq.${existing[0].id}`, 'PATCH', patchData);
     } else {
+      // Create new user record
       const postResult = await sb('ajigs_app_users', 'POST', userPayload);
       if (postResult === null) {
-        throw new Error('Could not create app user record. Check Supabase permissions.');
+        throw new Error('Could not create user record. Check Supabase permissions.');
       }
     }
 
-    // 3. Handle password
-    if (pass) {
-      // Show instruction to set password in Supabase Auth
-      alertEl.innerHTML = `
-        <strong>✅ Login access saved!</strong><br>
-        Now set the password in Supabase:<br>
-        1. Go to <strong>Supabase → Authentication → Users</strong><br>
-        2. Find <strong>${email}</strong> (invite or create user there)<br>
-        3. Set password: <strong>${pass}</strong><br>
-        <em>The staff member can now log in with that email and password.</em>`;
-      alertEl.className = 'alert alert-warning';
-      alertEl.classList.remove('d-none');
-      saveBtn.textContent = 'Save Login';
-      saveBtn.disabled = false;
-      renderStaff();
-      return;
-    }
-
-    // Success — no password entered
-    closeModal('modal-login-access');
+    // 3. Success
+    alertEl.innerHTML = `✅ Login access saved! <strong>${staffName}</strong> can now log in with:<br>
+      📧 Email: <strong>${email}</strong><br>
+      🔑 Password: <strong>${pass || '(unchanged)'}</strong>`;
+    alertEl.className = 'alert alert-warning';
+    alertEl.classList.remove('d-none');
+    saveBtn.textContent = 'Save Login';
+    saveBtn.disabled = false;
     renderStaff();
 
   } catch (e) {
@@ -1111,7 +1135,6 @@ async function saveLoginAccess() {
     alertEl.textContent = `Error: ${e.message}`;
     alertEl.className = 'alert alert-danger';
     alertEl.classList.remove('d-none');
-  } finally {
     saveBtn.textContent = 'Save Login';
     saveBtn.disabled = false;
   }
