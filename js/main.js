@@ -102,7 +102,7 @@ function submitContactForm() {
   // Open WhatsApp with pre-filled message
   // In production: also send via EmailJS — add your EmailJS keys
   // emailjs.send('SERVICE_ID', 'TEMPLATE_ID', { name, phone, service, location, message })
-  window.open(`https://wa.me/2348069051403?text=${msg}`, '_blank');
+  window.open(`https://wa.me/2347032053004?text=${msg}`, '_blank');
 
   if (alertEl) alertEl.classList.remove('d-none');
 

@@ -618,7 +618,7 @@ async function viewInvoice(id) {
       <div class="inv-top-right">
         <div class="inv-word-invoice">Invoice</div>
         <div class="inv-company-name">AJIGS CONNECT</div>
-        <div class="inv-company-meta">Kaduna Kaduna<br>NG<br><br>No. 5 Aliyu Asio Street New Extension Kawo, Kaduna, U/Rimi,<br>Kaduna State<br>08069051403<br>aris.jib.global.services@gmail.com</div>
+        <div class="inv-company-meta">Kaduna Kaduna<br>NG<br><br>No. 5 Aliyu Asio Street New Extension Kawo, Kaduna, U/Rimi,<br>Kaduna State<br>07032053004<br>aris.jib.global.services@gmail.com</div>
       </div>
     </div>
     <div class="inv-bill-row">
