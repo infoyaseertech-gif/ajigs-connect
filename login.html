@@ -128,14 +128,34 @@
         return;
       }
 
-      // Check password
+      // Check password — support both hashed and plain-text (migration fallback)
       const hashed = await hashPassword(pass);
-      if (user.password_hash !== hashed) {
+      const stored = user.password_hash || '';
+
+      // Accept if: hash matches, OR plain-text matches (before column was added), OR column is empty/null (first login after SQL run)
+      const passwordOk = stored === hashed        // hash match (normal)
+                      || stored === pass           // plain-text match (old records)
+                      || stored === '';            // no password set yet — allow & auto-save hash
+
+      if (!passwordOk) {
         errEl.textContent = 'Incorrect password. Please try again.';
         errEl.classList.remove('d-none');
         btn.textContent = 'Sign In to Dashboard';
         btn.disabled = false;
         return;
+      }
+
+      // If password was plain-text or empty, upgrade it to hash now
+      if (stored !== hashed) {
+        await fetch(`${SUPABASE_URL}/rest/v1/ajigs_app_users?id=eq.${user.id}`, {
+          method: 'PATCH',
+          headers: {
+            'apikey': SUPABASE_KEY,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=minimal',
+          },
+          body: JSON.stringify({ password_hash: hashed }),
+        });
       }
 
       // Success — store session (use anon key as token since we handle auth ourselves)
