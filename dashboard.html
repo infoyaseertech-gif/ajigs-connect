@@ -252,21 +252,27 @@
       <div id="panel-staff" class="panel">
         <div class="page-header">
           <div>
-            <div class="page-title">STAFF</div>
+            <div class="page-title">STAFF &amp; LOGINS</div>
             <div class="page-subtitle" id="staff-subtitle"></div>
           </div>
           <button class="btn btn-primary" onclick="openStaffModal()">+ Add Staff</button>
+        </div>
+        <div style="background:var(--info-bg);border:1px solid #bdd0f0;border-radius:var(--radius);padding:10px 14px;font-size:13px;color:var(--info);margin-bottom:1rem;">
+          ℹ️ Add staff members here. Then click <strong>➕ Login</strong> on any staff row to grant them a login and set which sections they can access.
         </div>
         <div class="table-wrap">
           <table>
             <thead><tr>
               <th>#</th><th>Name</th><th>Role</th><th>Phone</th>
-              <th>Status</th><th>Assigned Jobs</th><th>Actions</th>
+              <th>Status</th><th>Jobs</th><th>Login</th><th>Access</th><th>Actions</th>
             </tr></thead>
             <tbody id="staff-tbody"></tbody>
           </table>
         </div>
       </div>
+
+      <!-- Users panel (legacy alias — hidden, rendered via staff panel) -->
+      <div id="panel-users" class="panel" style="display:none!important;"></div>
 
       <!-- ==================== REPORTS ==================== -->
       <div id="panel-reports" class="panel">
@@ -301,23 +307,7 @@
         </div>
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;" id="gallery-admin-grid"></div>
         <div class="small-note" style="margin-top:1rem;">
-          Photos uploaded here appear immediately on the public Gallery page and the homepage. Max 5MB per photo.
-        </div>
-      </div>
-
-      <!-- ==================== USERS ==================== -->
-      <div id="panel-users" class="panel">
-        <div class="page-header">
-          <div><div class="page-title">USER MANAGEMENT</div></div>
-          <button class="btn btn-primary" onclick="openUserModal()">+ Add User</button>
-        </div>
-        <div class="table-wrap">
-          <table>
-            <thead><tr>
-              <th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Access</th><th>Actions</th>
-            </tr></thead>
-            <tbody id="users-tbody"></tbody>
-          </table>
+          Photos uploaded here appear immediately on the public Gallery page and homepage. Max 5MB per photo.
         </div>
       </div>
 
@@ -690,6 +680,49 @@
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="closeModal('modal-user')">Cancel</button>
       <button class="btn btn-primary" onclick="saveUser()">Save User</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN ACCESS MODAL -->
+<div class="modal-overlay" id="modal-login-access">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <div class="modal-title">Grant / Edit Login Access</div>
+      <button class="modal-close" onclick="closeModal('modal-login-access')">×</button>
+    </div>
+    <div class="modal-body">
+      <div style="background:var(--orange-light);border:1px solid var(--orange-mid);border-radius:var(--radius);padding:10px 14px;font-size:13px;margin-bottom:1rem;">
+        Setting login access for: <strong id="login-modal-staff-name"></strong>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Email Address *</label>
+          <input class="form-control" id="login-staff-email" type="email" placeholder="staff@email.com">
+          <div class="form-hint">This will be their login email</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">System Role</label>
+          <select class="form-control" id="login-staff-role">
+            <option value="Staff">Staff</option>
+            <option value="Proprietor">Proprietor</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password (leave blank to keep existing)</label>
+        <input class="form-control" id="login-staff-pass" type="password" placeholder="Set or update password">
+        <div class="form-hint">After saving, go to Supabase → Authentication → Users → find this email → set the password there too</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Section Access</label>
+        <div id="login-permissions-wrap"></div>
+      </div>
+      <div id="login-modal-alert" class="alert d-none"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-login-access')">Cancel</button>
+      <button class="btn btn-primary" id="login-access-save-btn" onclick="saveLoginAccess()">Save Login</button>
     </div>
   </div>
 </div>
