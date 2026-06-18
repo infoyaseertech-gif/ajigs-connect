@@ -104,7 +104,7 @@ async function loadGallery() {
   // Always start with built-in images (base64 embedded — always works)
   galleryItems = [...BUILTIN_GALLERY];
 
-  // Then try to fetch additional photos uploaded via dashboard
+  // Then fetch all photos uploaded via dashboard from Supabase
   try {
     const res = await fetch(`${GALLERY_SUPABASE_URL}/rest/v1/ajigs_gallery?select=*&order=created_at.desc`, {
       headers: { 'apikey': GALLERY_SUPABASE_KEY }
@@ -112,10 +112,11 @@ async function loadGallery() {
     if (res.ok) {
       const dbItems = await res.json();
       if (Array.isArray(dbItems) && dbItems.length) {
-        // Add DB items that have a real URL (not empty) and aren't duplicates
+        // Accept ALL items that have any image_url (http URL or base64)
+        // and aren't duplicates of built-in images
         const extra = dbItems.filter(d =>
           d.image_url &&
-          d.image_url.startsWith('http') &&
+          d.image_url.length > 0 &&
           !galleryItems.find(g => g.title === d.title)
         );
         // DB items go first (most recent uploads at top)
@@ -123,7 +124,6 @@ async function loadGallery() {
       }
     }
   } catch (e) {
-    // Supabase unreachable — built-in images still show
     console.log('Gallery: using built-in images only');
   }
   renderGallery();
