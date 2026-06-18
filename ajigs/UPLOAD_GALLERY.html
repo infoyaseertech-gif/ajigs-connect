@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AJIGS CONNECT — Upload Gallery Images</title>
+<style>
+  body{font-family:system-ui,sans-serif;background:#f5f5f5;padding:2rem;max-width:700px;margin:0 auto;}
+  h1{color:#E87722;}
+  .item{background:#fff;border:1px solid #ddd;border-radius:8px;padding:1rem;margin-bottom:1rem;display:flex;align-items:center;gap:1rem;}
+  .item img{width:80px;height:60px;object-fit:cover;border-radius:4px;}
+  .item-info{flex:1;}
+  .item-title{font-weight:700;font-size:14px;}
+  .item-cat{font-size:12px;color:#E87722;}
+  .status{font-size:12px;padding:4px 10px;border-radius:12px;font-weight:600;}
+  .status.pending{background:#fff3e0;color:#e65100;}
+  .status.uploading{background:#e3f2fd;color:#1565c0;}
+  .status.done{background:#e8f5e9;color:#2e7d32;}
+  .status.error{background:#ffebee;color:#c62828;}
+  #btn{background:#E87722;color:#fff;border:none;padding:14px 32px;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer;margin:1rem 0;}
+  #btn:disabled{opacity:.5;cursor:not-allowed;}
+  #log{background:#111;color:#0f0;padding:1rem;border-radius:8px;font-size:12px;font-family:monospace;max-height:200px;overflow-y:auto;margin-top:1rem;}
+  .progress-bar{height:6px;background:#eee;border-radius:3px;margin-top:8px;}
+  .progress-fill{height:100%;background:#E87722;border-radius:3px;transition:width .3s;}
+</style>
+</head>
+<body>
+<h1>AJIGS CONNECT — Gallery Image Uploader</h1>
+<p>This tool uploads all 13 project photos directly to your Supabase gallery. Open this file in Chrome, click Upload All, and wait for completion.</p>
+<div id="items-list"></div>
+<button id="btn" onclick="startUpload()">⬆️ Upload All 13 Photos to Gallery</button>
+<div class="progress-bar"><div class="progress-fill" id="prog" style="width:0%"></div></div>
+<div id="log"></div>
+
+<script src="assets/gallery/gallery_data.js"></script>
+<script>
+const SUPABASE_URL = 'https://pelkootzjmcppuljgbqs.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBlbGtvb3R6am1jcHB1bGpnYnFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk4MDY3NDEsImV4cCI6MjA5NTM4Mjc0MX0.rjuqM25Tx0pQNm-vZ9VdxkePimuUqYapU9bwmUhx2fw';
+
+function log(msg) {
+  const el = document.getElementById('log');
+  el.innerHTML += msg + '<br>';
+  el.scrollTop = el.scrollHeight;
+}
+
+function setStatus(code, text, cls) {
+  const el = document.getElementById('status-'+code);
+  if (el) { el.textContent = text; el.className = 'status ' + cls; }
+}
+
+function b64toBlob(b64, type='image/jpeg') {
+  const data = b64.split(',')[1];
+  const bytes = atob(data);
+  const buf = new Uint8Array(bytes.length);
+  for (let i=0; i<bytes.length; i++) buf[i] = bytes.charCodeAt(i);
+  return new Blob([buf], {type});
+}
+
+// Build list UI
+window.addEventListener('DOMContentLoaded', () => {
+  const list = document.getElementById('items-list');
+  list.innerHTML = GALLERY_IMAGES.map(img => `
+    <div class="item">
+      <img src="${img.b64}" alt="${img.title}">
+      <div class="item-info">
+        <div class="item-title">${img.title}</div>
+        <div class="item-cat">${img.category}</div>
+      </div>
+      <span class="status pending" id="status-${img.code}">Pending</span>
+    </div>`).join('');
+});
+
+async function startUpload() {
+  const btn = document.getElementById('btn');
+  btn.disabled = true;
+  btn.textContent = 'Uploading...';
+  let done = 0;
+
+  for (const img of GALLERY_IMAGES) {
+    setStatus(img.code, 'Uploading...', 'uploading');
+    log(`📤 Uploading: ${img.title}`);
+
+    try {
+      const blob = b64toBlob(img.b64);
+      const fileName = `gallery_${img.code}_${Date.now()}.jpg`;
+
+      // Upload to storage
+      const upRes = await fetch(`${SUPABASE_URL}/storage/v1/object/ajigs-gallery/${fileName}`, {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`,
+          'Content-Type': 'image/jpeg',
+        },
+        body: blob,
+      });
+
+      if (!upRes.ok) {
+        const err = await upRes.text();
+        throw new Error('Storage: ' + err.substring(0,100));
+      }
+
+      const imageUrl = `${SUPABASE_URL}/storage/v1/object/public/ajigs-gallery/${fileName}`;
+
+      // Save to gallery table
+      const dbRes = await fetch(`${SUPABASE_URL}/rest/v1/ajigs_gallery`, {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=representation',
+        },
+        body: JSON.stringify({
+          title: img.title,
+          category: img.category,
+          image_url: imageUrl,
+          uploaded_by: 'Admin',
+        }),
+      });
+
+      if (!dbRes.ok) {
+        const err = await dbRes.text();
+        throw new Error('DB: ' + err.substring(0,100));
+      }
+
+      setStatus(img.code, '✅ Done', 'done');
+      log(`✅ Done: ${img.title}`);
+    } catch(e) {
+      setStatus(img.code, '❌ Error', 'error');
+      log(`❌ Error for ${img.code}: ${e.message}`);
+    }
+
+    done++;
+    document.getElementById('prog').style.width = (done/GALLERY_IMAGES.length*100) + '%';
+    await new Promise(r => setTimeout(r, 800)); // small delay between uploads
+  }
+
+  btn.textContent = `✅ Upload Complete (${done}/${GALLERY_IMAGES.length})`;
+  log('🎉 All uploads finished! Check your public gallery page.');
+}
+</script>
+</body>
+</html>
