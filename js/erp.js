@@ -61,7 +61,8 @@ let editingId    = {};
 let invItemsArr  = [];
 
 /* ── ALL AVAILABLE SECTIONS ────────────────── */
-const ALL_SECTIONS = ['dashboard','jobs','invoices','clients','expenses','staff','reports','gallery'];
+const ALL_SECTIONS = ['dashboard','jobs','invoices','clients','expenses','staff','reports'];
+const ADMIN_ONLY_SECTIONS = ['gallery']; // Proprietor only — not assignable to staff
 // Users and Profile are handled separately
 
 /* ── HELPERS ───────────────────────────────── */
@@ -192,6 +193,7 @@ function buildSidebar() {
     const visible = group.items.filter(item => {
       if (item.id === 'profile') return true;
       if (item.id === 'dashboard') return true;
+      if (item.id === 'gallery') return isAdmin(); // Proprietor only
       return hasAccess(item.id);
     });
     if (!visible.length) return;
@@ -670,7 +672,7 @@ async function viewInvoice(id) {
       <div class="inv-terms-title">Payment Terms:</div>
       <div class="inv-terms-line">- Payment is done before the work starts</div>
       <div class="inv-terms-line">- Payment methods: Bank Transfer, Cheque, or Cash</div>
-      <div class="inv-terms-line">- Bank Details: [ARI JIB GLOBAL SERVICES LIMITED (MONIEPOINT) 8069051403]</div>
+      <div class="inv-terms-line">- Bank Details: [ARI JIB GLOBAL SERVICES LTD (MONIEPOINT) 8069051403]</div>
     </div>
   </div>`;
   openModal('modal-invoice-view');
@@ -1215,6 +1217,11 @@ async function renderReports() {
 const GALLERY_CATEGORIES = ['Construction','Building Materials Supply','Automobile Sales','Engineering Projects','Cleaning Services'];
 
 async function renderGalleryPanel() {
+  if (!isAdmin()) {
+    const grid = document.getElementById('gallery-admin-grid');
+    if (grid) grid.innerHTML = '<div class="td-empty" style="padding:2rem;text-align:center;color:var(--gray-400);grid-column:1/-1;">Gallery management is restricted to the Proprietor only.</div>';
+    return;
+  }
   const items = await sb('ajigs_gallery?select=*&order=created_at.desc') || [];
 
   const sub = document.getElementById('gallery-subtitle');
@@ -1244,6 +1251,7 @@ async function renderGalleryPanel() {
 }
 
 function openGalleryModal() {
+  if (!isAdmin()) { alert('Gallery management is restricted to the Proprietor only.'); return; }
   document.getElementById('gallery-title').value = '';
   document.getElementById('gallery-desc').value  = '';
   document.getElementById('gallery-category').value = GALLERY_CATEGORIES[0];
