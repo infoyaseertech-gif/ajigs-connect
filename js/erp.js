@@ -1021,72 +1021,100 @@ function setLoginPerms(checked) {
 }
 
 async function saveLoginAccess() {
-  const email   = document.getElementById('login-staff-email').value.trim();
+  const email   = document.getElementById('login-staff-email').value.trim().toLowerCase();
   const pass    = document.getElementById('login-staff-pass').value;
   const role    = document.getElementById('login-staff-role').value;
   const alertEl = document.getElementById('login-modal-alert');
   const saveBtn = document.getElementById('login-access-save-btn');
+
   alertEl.classList.add('d-none');
+  alertEl.className = 'alert d-none';
 
   if (!email) {
     alertEl.textContent = 'Email address is required.';
+    alertEl.className = 'alert alert-danger';
     alertEl.classList.remove('d-none');
     return;
   }
 
   const perms = role === 'Proprietor'
     ? ALL_SECTIONS
-    : ALL_SECTIONS.filter(s=>s!=='gallery').filter(sec => {
+    : ALL_SECTIONS.filter(sec => {
         const el = document.getElementById(`lperm-${sec}`);
         return el && el.checked;
       });
 
-  // 1. Update staff row with login fields
-  const staffData = {
-    email,
-    has_login:   true,
-    app_role:    role,
-    permissions: JSON.stringify(perms),
-  };
-
   saveBtn.textContent = 'Saving...';
   saveBtn.disabled = true;
 
-  const staffResult = await sb(`ajigs_staff?id=eq.${editingId.loginStaff}`, 'PATCH', staffData);
-  if (staffResult === null) {
-    alertEl.textContent = 'Failed to update staff login info. Try again.';
-    alertEl.classList.remove('d-none');
-    saveBtn.textContent = 'Save Login';
-    saveBtn.disabled = false;
-    return;
-  }
+  try {
+    // 1. Update ajigs_staff row with login fields
+    const staffPatch = await sb(
+      `ajigs_staff?id=eq.${editingId.loginStaff}`,
+      'PATCH',
+      { email, has_login: true, app_role: role, permissions: JSON.stringify(perms) }
+    );
 
-  // 2. Sync to ajigs_app_users for auth lookup
-  const existing = await sb(`ajigs_app_users?email=eq.${encodeURIComponent(email)}&select=id`) || [];
-  const userData = { name: document.getElementById('login-modal-staff-name').textContent, email, role, permissions: JSON.stringify(perms), is_active: true };
+    // sb() returns [] on successful PATCH with no body, or array of updated rows
+    // null means a real error occurred
+    if (staffPatch === null) {
+      throw new Error('Could not update staff record. Make sure you have run FIX_PERMISSIONS.sql in Supabase.');
+    }
 
-  if (existing.length) {
-    await sb(`ajigs_app_users?id=eq.${existing[0].id}`, 'PATCH', { role, permissions: JSON.stringify(perms) });
-  } else {
-    await sb('ajigs_app_users', 'POST', userData);
-  }
+    // 2. Upsert into ajigs_app_users so login lookup works
+    const staffName = document.getElementById('login-modal-staff-name').textContent.trim();
+    const existing  = await sb(`ajigs_app_users?email=eq.${encodeURIComponent(email)}&select=id`) || [];
 
-  // 3. If password provided, update Supabase auth password via admin note
-  if (pass) {
-    const note = document.getElementById('login-modal-alert');
-    note.textContent = `✅ Login saved. Password: set this in Supabase Auth → Users → find ${email} → Edit → set password to the one you entered here.`;
-    note.className = 'alert alert-warning';
-    note.classList.remove('d-none');
-    saveBtn.textContent = 'Save Login';
-    saveBtn.disabled = false;
+    const userPayload = {
+      name:        staffName,
+      email,
+      role,
+      permissions: JSON.stringify(perms),
+      is_active:   true,
+    };
+
+    if (existing.length) {
+      await sb(`ajigs_app_users?id=eq.${existing[0].id}`, 'PATCH', {
+        role, permissions: JSON.stringify(perms), is_active: true,
+      });
+    } else {
+      const postResult = await sb('ajigs_app_users', 'POST', userPayload);
+      if (postResult === null) {
+        throw new Error('Could not create app user record. Check Supabase permissions.');
+      }
+    }
+
+    // 3. Handle password
+    if (pass) {
+      // Show instruction to set password in Supabase Auth
+      alertEl.innerHTML = `
+        <strong>✅ Login access saved!</strong><br>
+        Now set the password in Supabase:<br>
+        1. Go to <strong>Supabase → Authentication → Users</strong><br>
+        2. Find <strong>${email}</strong> (invite or create user there)<br>
+        3. Set password: <strong>${pass}</strong><br>
+        <em>The staff member can now log in with that email and password.</em>`;
+      alertEl.className = 'alert alert-warning';
+      alertEl.classList.remove('d-none');
+      saveBtn.textContent = 'Save Login';
+      saveBtn.disabled = false;
+      renderStaff();
+      return;
+    }
+
+    // Success — no password entered
+    closeModal('modal-login-access');
     renderStaff();
-    return;
-  }
 
-  saveBtn.textContent = 'Save Login';
-  saveBtn.disabled = false;
-  closeModal('modal-login-access');
-  renderStaff();
+  } catch (e) {
+    console.error('saveLoginAccess error:', e);
+    alertEl.textContent = `Error: ${e.message}`;
+    alertEl.className = 'alert alert-danger';
+    alertEl.classList.remove('d-none');
+  } finally {
+    saveBtn.textContent = 'Save Login';
+    saveBtn.disabled = false;
+  }
 }
 
 async function revokeLogin(staffId) {
