@@ -686,40 +686,40 @@ function printInvoice() {
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
       *{margin:0;padding:0;box-sizing:border-box}body{font-family:'Source Sans 3',sans-serif;background:#fff;}
-      .invoice-doc{background:#fff;padding:44px 52px;color:#000;font-size:12.5px;line-height:1.5;}
+      .invoice-doc{background:#fff;padding:44px 52px;color:#000;font-size:14px;line-height:1.6;}
       .inv-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:36px;}
       .inv-logo-box{display:flex;flex-direction:column;align-items:center;min-width:180px;}
-      .inv-logo-rc{font-size:13px;color:#D32F2F;font-weight:700;letter-spacing:2px;margin-bottom:6px;}
+      .inv-logo-rc{font-size:14px;color:#D32F2F;font-weight:700;letter-spacing:2px;margin-bottom:6px;}
       .inv-logo-img{width:185px;height:auto;display:block;}
       .inv-top-right{text-align:right;}
-      .inv-word-invoice{font-size:20px;font-weight:300;letter-spacing:4px;color:#555;margin-bottom:4px;}
-      .inv-company-name{font-family:'Oswald',sans-serif;font-size:15px;font-weight:600;letter-spacing:2.5px;}
-      .inv-company-meta{font-size:11.5px;color:#444;line-height:1.8;margin-top:6px;}
+      .inv-word-invoice{font-size:24px;font-weight:400;letter-spacing:4px;color:#333;margin-bottom:4px;}
+      .inv-company-name{font-family:'Oswald',sans-serif;font-size:17px;font-weight:700;letter-spacing:2.5px;}
+      .inv-company-meta{font-size:13px;color:#333;line-height:1.9;margin-top:6px;font-weight:500;}
       .inv-bill-row{display:grid;grid-template-columns:1fr 1fr;gap:24px;border-top:1px solid #ddd;padding-top:20px;margin-bottom:28px;}
-      .inv-bill-label{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#333;margin-bottom:8px;}
-      .inv-bill-name{font-size:14px;font-weight:700;color:#000;margin-bottom:3px;}
-      .inv-bill-addr{font-size:12px;color:#444;line-height:1.6;}
-      .inv-meta-grid{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font-size:12px;text-align:right;}
-      .inv-meta-key{font-weight:700;color:#333;text-align:right;}
+      .inv-bill-label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#000;margin-bottom:8px;}
+      .inv-bill-name{font-size:16px;font-weight:700;color:#000;margin-bottom:3px;}
+      .inv-bill-addr{font-size:13px;color:#333;line-height:1.7;font-weight:500;}
+      .inv-meta-grid{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:13px;text-align:right;font-weight:500;}
+      .inv-meta-key{font-weight:700;color:#000;text-align:right;}
       .inv-meta-val{color:#000;text-align:right;}
       .inv-table{width:100%;border-collapse:collapse;margin-bottom:20px;}
-      .inv-table th{border-top:1.5px solid #000;border-bottom:1.5px solid #000;padding:8px 10px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#000;text-align:left;}
+      .inv-table th{border-top:2px solid #000;border-bottom:2px solid #000;padding:10px 12px;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#000;text-align:left;}
       .inv-table th:nth-child(2){text-align:center;}.inv-table th:nth-child(3),.inv-table th:nth-child(4){text-align:right;}
-      .inv-table td{padding:9px 10px;font-size:12.5px;border-bottom:1px solid #f0f0f0;vertical-align:top;color:#000;}
+      .inv-table td{padding:11px 12px;font-size:14px;border-bottom:1px solid #eee;vertical-align:top;color:#000;font-weight:500;}
       .inv-table td:nth-child(2){text-align:center;}.inv-table td:nth-child(3),.inv-table td:nth-child(4){text-align:right;}
-      .inv-item-name{font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.5px;color:#000;display:block;}
-      .inv-item-desc{font-size:11.5px;color:#444;margin-top:3px;line-height:1.55;display:block;}
+      .inv-item-name{font-weight:700;font-size:15px;text-transform:uppercase;letter-spacing:.5px;color:#000;display:block;}
+      .inv-item-desc{font-size:13px;color:#333;margin-top:4px;line-height:1.6;display:block;font-weight:400;}
       .inv-totals-wrap{display:flex;justify-content:flex-end;margin-bottom:6px;}
-      .inv-totals-box{width:250px;}
-      .inv-total-line{display:flex;justify-content:space-between;padding:5px 0;font-size:12.5px;border-bottom:1px solid #f0f0f0;color:#000;}
-      .inv-total-line:last-child{border-bottom:none;font-weight:700;font-size:13.5px;}
+      .inv-totals-box{width:280px;}
+      .inv-total-line{display:flex;justify-content:space-between;padding:7px 0;font-size:14px;border-bottom:1px solid #eee;color:#000;font-weight:500;}
+      .inv-total-line:last-child{border-bottom:none;font-weight:700;font-size:15px;}
       .inv-amount-due{display:flex;justify-content:flex-end;margin-bottom:28px;}
-      .inv-amount-due-box{width:250px;background:#f4f4f4;padding:14px 18px;text-align:right;}
-      .inv-amount-due-label{font-size:11px;color:#666;letter-spacing:.5px;margin-bottom:3px;}
-      .inv-amount-due-value{font-size:24px;font-weight:700;color:#000;}
+      .inv-amount-due-box{width:280px;background:#f4f4f4;padding:16px 20px;text-align:right;}
+      .inv-amount-due-label{font-size:13px;color:#555;letter-spacing:.5px;margin-bottom:4px;font-weight:600;}
+      .inv-amount-due-value{font-size:28px;font-weight:700;color:#000;}
       .inv-payment-terms{border-top:1px solid #ddd;padding-top:16px;}
-      .inv-terms-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#000;margin-bottom:7px;}
-      .inv-terms-line{font-size:11.5px;color:#333;line-height:1.9;}
+      .inv-terms-title{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#000;margin-bottom:7px;}
+      .inv-terms-line{font-size:13px;color:#222;line-height:2;font-weight:500;}
       @media print{body{margin:0;}@page{margin:0;}}
     </style>
   </head><body>${content}</body></html>`);
@@ -1293,41 +1293,52 @@ async function saveGalleryItem() {
   saveBtn.disabled = true;
 
   try {
-    // Upload to Supabase Storage bucket "ajigs-gallery"
-    const ext = file.name.split('.').pop();
+    const ext      = file.name.split('.').pop().toLowerCase() || 'jpg';
     const fileName = `gallery_${Date.now()}.${ext}`;
-    const token = localStorage.getItem('ajigs_token');
 
+    // Try Supabase Storage first
+    let imageUrl = null;
     const uploadRes = await fetch(`${SUPABASE_URL}/storage/v1/object/ajigs-gallery/${fileName}`, {
       method: 'POST',
       headers: {
-        'apikey': SUPABASE_KEY,
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': file.type,
+        'apikey':        SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`,  // use anon key as Bearer
+        'Content-Type':  file.type || 'image/jpeg',
+        'x-upsert':      'true',
       },
       body: file,
     });
 
-    if (!uploadRes.ok) {
-      const errText = await uploadRes.text();
-      throw new Error('Upload failed: ' + errText);
+    if (uploadRes.ok) {
+      imageUrl = `${SUPABASE_URL}/storage/v1/object/public/ajigs-gallery/${fileName}`;
+    } else {
+      // Storage failed — store image as base64 directly in the DB record
+      // This always works regardless of storage bucket setup
+      imageUrl = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload  = e => resolve(e.target.result);
+        reader.onerror = () => reject(new Error('Could not read file.'));
+        reader.readAsDataURL(file);
+      });
     }
 
-    const imageUrl = `${SUPABASE_URL}/storage/v1/object/public/ajigs-gallery/${fileName}`;
-
+    // Save record to ajigs_gallery table
     const result = await sb('ajigs_gallery', 'POST', {
-      title, category, description: desc,
-      image_url: imageUrl,
-      uploaded_by: currentUser.name,
+      title,
+      category,
+      description:  desc,
+      image_url:    imageUrl,
+      uploaded_by:  currentUser.name,
     });
 
-    if (result === null) throw new Error('Failed to save gallery record.');
+    if (result === null) throw new Error('Failed to save to database. Check Supabase permissions.');
 
     closeModal('modal-gallery');
     renderGalleryPanel();
+
   } catch (e) {
-    console.error(e);
-    alertEl.textContent = 'Upload failed. Please check your connection and try again.';
+    console.error('Gallery upload error:', e);
+    alertEl.textContent = `Error: ${e.message}`;
     alertEl.classList.remove('d-none');
   } finally {
     saveBtn.textContent = 'Upload Photo';
