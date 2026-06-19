@@ -1230,12 +1230,18 @@ async function renderGalleryPanel() {
   const grid = document.getElementById('gallery-admin-grid');
   if (!grid) return;
 
+  // Show seed button if DB has fewer than 13 images (built-ins not yet seeded)
+  const seedBanner = document.getElementById('gallery-seed-banner');
+  if (seedBanner) {
+    seedBanner.style.display = items.length < 13 ? 'block' : 'none';
+  }
+
   grid.innerHTML = items.length
     ? items.map(item => `
         <div class="card" style="overflow:hidden;">
           <div style="aspect-ratio:4/3;background:var(--gray-100);overflow:hidden;">
             ${item.image_url
-              ? `<img src="${item.image_url}" alt="${item.title||''}" style="width:100%;height:100%;object-fit:cover;">`
+              ? `<img src="${item.image_url}" alt="${item.title||''}" style="width:100%;height:100%;object-fit:cover;" loading="lazy">`
               : `<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:2.5rem;color:var(--gray-300);">📷</div>`
             }
           </div>
@@ -1247,7 +1253,51 @@ async function renderGalleryPanel() {
             <button class="btn btn-danger btn-sm" style="width:100%;justify-content:center;" onclick="deleteGalleryItem(${item.id})">🗑️ Delete</button>
           </div>
         </div>`).join('')
-    : '<div class="td-empty" style="padding:2rem;text-align:center;color:var(--gray-400);grid-column:1/-1;">No gallery photos yet. Click + Add Photo to upload one.</div>';
+    : '<div class="td-empty" style="padding:2rem;text-align:center;color:var(--gray-400);grid-column:1/-1;">No gallery photos yet. Click + Add Photo to upload one, or click "Load Built-in Photos" above.</div>';
+}
+
+async function seedBuiltinToDB() {
+  const btn = document.getElementById('gallery-seed-btn');
+  if (btn) { btn.textContent = 'Loading...'; btn.disabled = true; }
+
+  // Built-in gallery images — same 13 project photos
+  const BUILTIN = [
+    { title:'Bridge Foundation Construction',         category:'Construction',        description:'Foundation and formwork construction for a culvert/bridge.' },
+    { title:'Bathroom Tiling & Plumbing Works',       category:'Construction',        description:'Completed bathroom with wall tiling, water heater and plumbing.' },
+    { title:'Completed Duplex — Exterior View',       category:'Construction',        description:'Exterior view of a completed duplex with marble cladding.' },
+    { title:'Electrical Works & Wiring Installation', category:'Engineering Projects', description:'Electrical conduit and wiring installation on building exterior.' },
+    { title:'Compound & Lawn Maintenance',            category:'Cleaning Services',   description:'Compound cleaning and lawn maintenance — after treatment view.' },
+    { title:'Compound Tiling & Water Tank',           category:'Construction',        description:'Tiled compound with overhead water tank installation.' },
+    { title:'Completed Mansion',                      category:'Construction',        description:'Fully completed mansion with pitched roof and stone cladding.' },
+    { title:'Perimeter Fence & Gate Pillars',         category:'Construction',        description:'Completed perimeter fence with decorative pillars.' },
+    { title:'Commercial Building — Courtyard',        category:'Engineering Projects', description:'Courtyard tiling and steel railings for a commercial complex.' },
+    { title:'Commercial Complex — Open Courtyard',    category:'Engineering Projects', description:'Wide-angle view of completed commercial complex courtyard.' },
+    { title:'Tiled Corridor & Interior Finishing',    category:'Construction',        description:'Building corridor with wood-effect floor tiles.' },
+    { title:'Indoor Courtyard with Drainage',         category:'Construction',        description:'Indoor courtyard with drainage channel and tiling.' },
+    { title:'Building Corridor — Floor Tiling',       category:'Construction',        description:'Long building corridor with completed floor tiling.' },
+  ];
+
+  // Check which ones are already in DB to avoid duplicates
+  const existing = await sb('ajigs_gallery?select=title') || [];
+  const existingTitles = existing.map(e => e.title);
+
+  let added = 0;
+  for (const img of BUILTIN) {
+    if (existingTitles.includes(img.title)) continue;
+    // Use a placeholder — CEO can upload real images from gallery photos saved locally
+    const result = await sb('ajigs_gallery', 'POST', {
+      title:       img.title,
+      category:    img.category,
+      description: img.description,
+      image_url:   '', // empty — will show placeholder until real image is uploaded
+      uploaded_by: 'Admin',
+    });
+    if (result !== null) added++;
+  }
+
+  alert(`Done! ${added} built-in photo records added to gallery. They show as placeholders — you can delete any or upload real photos to replace them.`);
+  if (btn) { btn.textContent = 'Load Built-in Photos'; btn.disabled = false; }
+  renderGalleryPanel();
 }
 
 function openGalleryModal() {

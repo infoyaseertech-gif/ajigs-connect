@@ -305,9 +305,13 @@
           </div>
           <button class="btn btn-primary" onclick="openGalleryModal()">+ Add Photo</button>
         </div>
+        <div id="gallery-seed-banner" style="display:none;background:var(--info-bg);border:1px solid #bdd0f0;border-radius:var(--radius);padding:10px 14px;font-size:13px;color:var(--info);margin-bottom:1rem;">
+          ℹ️ The 13 built-in project photos are currently shown on the public gallery but cannot be managed here yet.
+          <button class="btn btn-secondary btn-sm" id="gallery-seed-btn" onclick="seedBuiltinToDB()" style="margin-left:12px;">Load Built-in Photos into Gallery</button>
+        </div>
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;" id="gallery-admin-grid"></div>
         <div class="small-note" style="margin-top:1rem;">
-          Photos uploaded here appear immediately on the public Gallery page and homepage. Max 5MB per photo.
+          Photos uploaded here appear immediately on the public Gallery page. Max 5MB per photo.
         </div>
       </div>
 

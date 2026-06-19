@@ -101,10 +101,7 @@ const categoryIcons = {
 };
 
 async function loadGallery() {
-  // Always start with built-in images (base64 embedded — always works)
-  galleryItems = [...BUILTIN_GALLERY];
-
-  // Then fetch all photos uploaded via dashboard from Supabase
+  // Fetch ALL photos from database (built-in ones will be seeded there on first load)
   try {
     const res = await fetch(`${GALLERY_SUPABASE_URL}/rest/v1/ajigs_gallery?select=*&order=created_at.desc`, {
       headers: { 'apikey': GALLERY_SUPABASE_KEY }
@@ -112,21 +109,49 @@ async function loadGallery() {
     if (res.ok) {
       const dbItems = await res.json();
       if (Array.isArray(dbItems) && dbItems.length) {
-        // Accept ALL items that have any image_url (http URL or base64)
-        // and aren't duplicates of built-in images
-        const extra = dbItems.filter(d =>
-          d.image_url &&
-          d.image_url.length > 0 &&
-          !galleryItems.find(g => g.title === d.title)
-        );
-        // DB items go first (most recent uploads at top)
-        galleryItems = [...extra, ...galleryItems];
+        // DB has images — use them directly
+        galleryItems = dbItems.filter(d => d.image_url && d.image_url.length > 0);
+      } else {
+        // DB is empty — seed built-in images into database automatically
+        galleryItems = [...BUILTIN_GALLERY];
+        seedBuiltinImages();
       }
+    } else {
+      // Fetch failed — show built-in as fallback
+      galleryItems = [...BUILTIN_GALLERY];
     }
   } catch (e) {
     console.log('Gallery: using built-in images only');
+    galleryItems = [...BUILTIN_GALLERY];
   }
   renderGallery();
+}
+
+async function seedBuiltinImages() {
+  // Save all built-in images into Supabase so they can be managed/deleted from dashboard
+  for (const img of BUILTIN_GALLERY) {
+    try {
+      await fetch(`${GALLERY_SUPABASE_URL}/rest/v1/ajigs_gallery`, {
+        method: 'POST',
+        headers: {
+          'apikey':        GALLERY_SUPABASE_KEY,
+          'Content-Type':  'application/json',
+          'Prefer':        'return=minimal',
+        },
+        body: JSON.stringify({
+          title:       img.title,
+          category:    img.category,
+          description: img.description || '',
+          image_url:   img.image_url,
+          uploaded_by: 'Admin',
+        }),
+      });
+    } catch(e) {
+      // Silent fail — images still show from BUILTIN_GALLERY
+    }
+  }
+  // Reload from DB after seeding
+  setTimeout(loadGallery, 1000);
 }
 
 function renderGallery() {
